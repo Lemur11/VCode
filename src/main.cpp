@@ -4,6 +4,7 @@
 #include "ladybrown.h"
 #include "pros/misc.h"
 #include "pros/motors.h"
+#include "pros/rtos.hpp"
 #include "utils.h"
 #include <cmath>
 #include <cstdio>
@@ -131,7 +132,9 @@ void initialize() {
 	rot.reset();
 	rot.reset_position();
 
-	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+
+	// lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
 }
 
@@ -186,6 +189,7 @@ void opcontrol() {
 
 	int cur_target;
 	int reading;
+	int lb_vol;
 
 	// lb.move(3700, true);
 
@@ -231,9 +235,13 @@ void opcontrol() {
 		switch(lady_brown_state) {
 			case NORMAL:
 			{
+				lb.off();
+				printf("Normal\n");
+				printf("Power %f\n", lady_brown.get_power());
+				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 				if (controller.get_digital_new_press(DIGITAL_A)) {
-					lb.move(4100);
 					lady_brown_state = FIRST;
+					lb.move(3500);
 				}
 				break;
 			}
@@ -241,7 +249,7 @@ void opcontrol() {
 			{
 				if (controller.get_digital_new_press(DIGITAL_A)) {
 					printf("Done\n");
-					lb.move(5100);
+					lb.move(5000);
 					lady_brown_state = SECOND;
 				}
 				break;
@@ -259,32 +267,46 @@ void opcontrol() {
 				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 				printf("Manual\n");
 				if (controller.get_digital(DIGITAL_L1)) {
-					lady_brown.move_voltage(8000);
+					lb_vol = 8000;
 				}
 				else if (controller.get_digital_new_press(DIGITAL_A)) {
+					left_motors.move_voltage(10000);
+					right_motors.move_voltage(10000);
+					pros::delay(300);
 					lb.move(1000);
+					pros::delay(500);
+					left_motors.move_voltage(0);
+					right_motors.move_voltage(0);
 					lady_brown_state = RESET;
 				}
 				else if (controller.get_digital(DIGITAL_L2)) {
-					lady_brown.move_voltage(-8000);
+					lb_vol = -8000;
 				}
 				else {
-					lady_brown.move_velocity(0);
+					lb_vol = 0;
 				}
-				// if (rot.get_position() > 13000) {
-				// 	lady_brown.move_voltage(-5000);
-				// }
+				if (rot.get_position() > 15000) {
+					lady_brown.move_voltage(std::min(0, lb_vol));
+				}
+				else {
+					lady_brown.move_voltage(lb_vol);
+				}
 				break;
 			}
 			case RESET:
 			{
 				reading = rot.get_position();
-				printf("Reading: %d\n", reading);
-				if (fabs(1000.0 - reading) < 1000.0) {
+				if (controller.get_digital(DIGITAL_A)) {
+					lady_brown_state = NORMAL;
+				} 
+				if (lb.done()) {
+					printf("EXIT\n");
 					lb.off();
 					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+					printf("Coasting\n");
 					lady_brown_state = NORMAL;
 				}
+				break;
 			}
 			
 		}

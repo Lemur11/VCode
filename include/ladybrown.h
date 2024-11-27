@@ -16,5 +16,6 @@ class LadyBrown {
     public:
         LadyBrown();
         void off();
+        bool done();
         void move(int cur_target, bool blocking=false);
 };

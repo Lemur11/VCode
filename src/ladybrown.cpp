@@ -14,6 +14,12 @@ LadyBrown::LadyBrown() :
 }
 
 void LadyBrown::update() {
+    if (fabs(this->target - rot.get_position()) < pos_deadzone && lb_pid.get_deriv() < vel_deadzone) {
+        at_target = true;
+    }
+    else {
+        at_target = false;
+    }
     if (on) {
         int reading = rot.get_position();
         lady_brown.move_voltage(lb_pid.cycle(target, reading));
@@ -38,7 +44,11 @@ void LadyBrown::move(int target, bool blocking) {
 
 void LadyBrown::off() {
     on = false;
+    lady_brown.move_voltage(0);
 }
 
+bool LadyBrown::done() {
+    return at_target;
+}
 
 
