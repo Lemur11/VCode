@@ -2,7 +2,7 @@
 #include <cmath>
 
 LadyBrown::LadyBrown() : 
-    lb_pid(3.0, 0.02, 3.0) 
+    lb_pid(3.0, 0.02, 3.0, 45000.0) 
     {
     update_task = std::make_unique<pros::Task>([this](){
         while(true) {

@@ -10,52 +10,45 @@
 #include <cstdio>
 
 
-int joystick(int inp) {
-	if (abs(inp) < 15) {
-		return 0;
-	}
-	else {
-		return inp;
-	}
-}
 
-float target_cal(float x) {
-	if (x < 0) {
-		return 360 - x;
-	}
-	else {
-		return fmod(x, 360);
-	}
-}
+void move(float target) {
+	// init pid
+	PID left_pid = PID(1, 0, 0);
+	PID right_pid = PID(1, 0, 0);
 
-void move(float t) {
+	// reset motor encoder readings
 	left_motor.tare_position();
 	right_motor.tare_position();
 
-	PID left_pid = PID(22.5, 0, 0);
-	PID right_pid = PID(22.5, 0, 0);
+	// debug
+	printf("Target: %f\n", target); 
 
-	float target = t / (3.1416 * 3.25) * 360;
-	printf("Target: %f\n", target);
+	// get initial readings and set prev err
 	float l_reading = left_motor.get_position();
 	float r_reading = right_motor.get_position();
 	left_pid.set_prev(target - l_reading);
 	right_pid.set_prev(target - r_reading);
-	float l_vol;
-	float r_vol;
-	while ( fabs((l_reading + r_reading)/2 - target) > 10) {
+	
+	// loop
+	while (true) {
+		// exit condition
+		if (fabs((l_reading + r_reading)/2 - target) < 10) {
+			break;
+		}
+		// get readings
 		l_reading = left_motor.get_position();
 		r_reading = right_motor.get_position();
+		
+		//debug
 		pros::lcd::print(1, "Left: %f\nRight: %f", l_reading, r_reading);
-		r_vol = std::min((float)12000.0, right_pid.cycle(target, r_reading));
-		l_vol = std::min((float)12000.0, left_pid.cycle(target, l_reading));
-		printf("L: %f, R: %f\n", l_reading, r_reading);
-		printf("L_out: %f, R_out: %f\n", l_vol, r_vol);
-		right_motors.move_voltage(r_vol);
-		left_motors.move_voltage(l_vol);
+
+		// pid calc and move
+		left_motors.move_voltage(left_pid.cycle(target, l_reading));
+		right_motors.move_voltage(right_pid.cycle(target, r_reading));
 
 		pros::delay(20);
 	};
+	// stop motors
 	left_motors.move_voltage(0);
 	right_motors.move_voltage(0);
 }
@@ -63,47 +56,50 @@ void move(float t) {
 
 void turn(float degrees) {
 	float turn_factor = 1;
-	pros::lcd::print(4, "ENTERED");
+	PID turn_pid = PID(10, 0, 0);
+	
+	// initial readings
 	float reading = (float)imu.get_heading();
-	printf("%f", reading);
 	float target = target_cal(reading + degrees);
 	printf("%f", target);
 	float err = wrap(target, reading);
-
-	PID turn_pid = PID(500, 0, 0);
+	
+	// set pid prev error to prevent massive deriv at start
 	turn_pid.set_prev(-err);
-
-	pros::lcd::print(2, "Heading: %f", reading);
 
 	float turn_vol;
 	while (true) {
+		// loop end control
 		if (fabs(err) < 0.5) {
 			break;
 		}
+		// get heading
 		reading = (float)imu.get_heading();
+
+		// if dc imu stop turning
 		if (!imu.is_installed()) {
 			pros::lcd::print(5, "IMU ERR");
 			break;
 		}
+		// pid calculation
 		err = wrap(target, reading);
-		turn_vol = turn_pid.cycle(0, err);
-		printf("Target: %f, Reading: %f, Err: %f, Vel: %f\n", target, reading, err, turn_vol);
-		pros::lcd::print(2, "Heading: %f", reading);
+		turn_vol = turn_pid.cycle(0, err);;
 
+		// move motors
 		left_motors.move_voltage(-turn_vol * turn_factor);
 		right_motors.move_voltage(turn_vol * turn_factor);
 
 		pros::delay(20);
 	}
+	// stop motors
 	left_motors.move_velocity(0);
 	right_motors.move_velocity(0);
-	pros::delay(100);
 }
 
 
 
 
-
+// init lady brown class and state var
 LadyBrown lb = LadyBrown();
 lady_brown_state_enum lady_brown_state = lady_brown_state_enum::NORMAL;
 
@@ -117,9 +113,11 @@ void initialize() {
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Hello PROS User!");
 
+	// imu calibration
 	imu.reset(true);
 	imu.tare();
 
+	// reset motors and motor encoders
 	left_motors.set_gearing_all(pros::E_MOTOR_GEARSET_06);
 	right_motors.set_gearing_all(pros::E_MOTOR_GEARSET_06);
 	left_motor.set_gearing(pros::E_MOTOR_GEARSET_06);
@@ -191,12 +189,8 @@ void opcontrol() {
 	int reading;
 	int lb_vol;
 
-	// lb.move(3700, true);
-
-
-
 	while (true) {
-		// Arcade control scheme
+		// Arcade control scheme with deadzones
 		int dir = joystick(controller.get_analog(ANALOG_LEFT_Y));    // Gets amount forward/backward from left joystick
 		int turn = joystick(controller.get_analog(ANALOG_RIGHT_X));  // Gets the turn left/right from right joystick
 		left_motors.move(dir + turn);                      // Sets left motor voltage
