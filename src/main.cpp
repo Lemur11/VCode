@@ -1,102 +1,9 @@
 #include "main.h"
 #include "devices.h"
-#include "pid.h"
 #include "ladybrown.h"
-#include "pros/misc.h"
-#include "pros/motors.h"
-#include "pros/rtos.hpp"
 #include "utils.h"
-#include <cmath>
+#include "motions.h"
 #include <cstdio>
-
-
-
-void move(float target) {
-	// init pid
-	PID left_pid = PID(1, 0, 0);
-	PID right_pid = PID(1, 0, 0);
-
-	// reset motor encoder readings
-	left_motor.tare_position();
-	right_motor.tare_position();
-
-	// debug
-	printf("Target: %f\n", target); 
-
-	// get initial readings and set prev err
-	float l_reading = left_motor.get_position();
-	float r_reading = right_motor.get_position();
-	left_pid.set_prev(target - l_reading);
-	right_pid.set_prev(target - r_reading);
-	
-	// loop
-	while (true) {
-		// exit condition
-		if (fabs((l_reading + r_reading)/2 - target) < 10) {
-			break;
-		}
-		// get readings
-		l_reading = left_motor.get_position();
-		r_reading = right_motor.get_position();
-		
-		//debug
-		pros::lcd::print(1, "Left: %f\nRight: %f", l_reading, r_reading);
-
-		// pid calc and move
-		left_motors.move_voltage(left_pid.cycle(target, l_reading));
-		right_motors.move_voltage(right_pid.cycle(target, r_reading));
-
-		pros::delay(20);
-	};
-	// stop motors
-	left_motors.move_voltage(0);
-	right_motors.move_voltage(0);
-}
-
-
-void turn(float degrees) {
-	float turn_factor = 1;
-	PID turn_pid = PID(10, 0, 0);
-	
-	// initial readings
-	float reading = (float)imu.get_heading();
-	float target = target_cal(reading + degrees);
-	printf("%f", target);
-	float err = wrap(target, reading);
-	
-	// set pid prev error to prevent massive deriv at start
-	turn_pid.set_prev(-err);
-
-	float turn_vol;
-	while (true) {
-		// loop end control
-		if (fabs(err) < 0.5) {
-			break;
-		}
-		// get heading
-		reading = (float)imu.get_heading();
-
-		// if dc imu stop turning
-		if (!imu.is_installed()) {
-			pros::lcd::print(5, "IMU ERR");
-			break;
-		}
-		// pid calculation
-		err = wrap(target, reading);
-		turn_vol = turn_pid.cycle(0, err);;
-
-		// move motors
-		left_motors.move_voltage(-turn_vol * turn_factor);
-		right_motors.move_voltage(turn_vol * turn_factor);
-
-		pros::delay(20);
-	}
-	// stop motors
-	left_motors.move_velocity(0);
-	right_motors.move_velocity(0);
-}
-
-
 
 
 // init lady brown class and state var
@@ -189,13 +96,24 @@ void opcontrol() {
 	int reading;
 	int lb_vol;
 
+	move(1000);
+	turn(90);
+	move(1000);
+	turn(90);
+	move(1000);
+	turn(90);
+	move(1000);
+	turn(90);
+
+	printf("OPCONTROL\n");
 	while (true) {
 		// Arcade control scheme with deadzones
 		int dir = joystick(controller.get_analog(ANALOG_LEFT_Y));    // Gets amount forward/backward from left joystick
-		int turn = joystick(controller.get_analog(ANALOG_RIGHT_X));  // Gets the turn left/right from right joystick
-		left_motors.move(dir + turn);                      // Sets left motor voltage
-		right_motors.move(dir - turn);                     // Sets right motor voltage
+		int turn_p = joystick(controller.get_analog(ANALOG_RIGHT_X));  // Gets the turn left/right from right joystick
+		left_motors.move(dir + turn_p);                      // Sets left motor voltage
+		right_motors.move(dir - turn_p);                     // Sets right motor voltage
 
+		pros::lcd::print(1, "%f, %f", left_motor.get_position(), right_motor.get_position());
 	
 		// button logic
 		// use toggle (on rising edge)
@@ -213,7 +131,7 @@ void opcontrol() {
 		}
 
 		if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-			claw.toggle();
+			intake_lift.toggle();
 		}
 
 		if (controller.get_digital(DIGITAL_R1)) {

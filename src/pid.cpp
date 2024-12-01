@@ -3,13 +3,8 @@
 #include "utils.h"
 #include <algorithm>
 
-PID::PID(float p, float i, float d, float windup_val, bool integral_zero_at_sign_change) {
-    kp = p;
-    kd = d;
-    ki = i;
-    zero_at_sign_change = integral_zero_at_sign_change;
-    windup = windup_val;
-};
+PID::PID(float p, float i, float d, float windup_val, bool integral_zero_at_sign_change) : 
+        kp(p), ki(i), kd(d), windup(windup_val), zero_at_sign_change(integral_zero_at_sign_change) {};
 
 float PID::cycle(float reference, float reading) {
     error = reference - reading;
@@ -25,7 +20,7 @@ float PID::cycle(float reference, float reading) {
 
     vol = kp * error + err_sum * ki + delta * kd;
     vol = std::clamp(vol, -12000.0f, 12000.0f);
-    printf("%f\n", reading);
+    printf("E: %f\n", error);
     return vol;
 }
 

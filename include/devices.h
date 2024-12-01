@@ -12,7 +12,7 @@ extern pros::Motor intake;
 
 extern pros::adi::Pneumatics mogo;
 extern pros::adi::Pneumatics doinker;
-extern pros::adi::Pneumatics claw;
+extern pros::adi::Pneumatics intake_lift;
 
 extern pros::Controller controller;
 

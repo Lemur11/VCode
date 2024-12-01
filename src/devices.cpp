@@ -15,12 +15,12 @@ pros::Motor intake = pros::Motor(17);
 // pneumatics
 pros::adi::Pneumatics mogo = pros::adi::Pneumatics('a', false);
 pros::adi::Pneumatics doinker = pros::adi::Pneumatics('b', false);
-pros::adi::Pneumatics claw = pros::adi::Pneumatics('h', false);
+pros::adi::Pneumatics intake_lift = pros::adi::Pneumatics('c', false);
 
 // controller
 pros::Controller controller = pros::Controller(pros::E_CONTROLLER_MASTER);
 
 // sensors
-pros::Imu imu = pros::Imu(17);
+pros::Imu imu = pros::Imu(2);
 
 pros::Rotation rot = pros::Rotation(18);
