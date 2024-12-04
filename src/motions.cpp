@@ -1,14 +1,12 @@
-#include "motions.h"
 #include "main.h"
-#include "pid.h"
+#include "motions.h"
 #include "devices.h"
+#include "pros/rtos.hpp"
 #include "utils.h"
 
 
-void move(float target) {
-	// init pid
-	PID left_pid = PID(25, 0, 90);
-	PID right_pid = PID(25, 0, 90);
+void move(float target, PID &left_pid, PID &right_pid, int units, int timeout) {
+    target = target * units;
 
 	// reset motor encoder readings
 	left_motor.tare_position();
@@ -24,9 +22,14 @@ void move(float target) {
 	right_pid.set_prev(target - r_reading);
 	
 	// loop
+	int stime = pros::millis();
 	while (true) {
 		// exit condition
-		if (fabs((l_reading + r_reading)/2 - target) < 10 && fabs(left_pid.get_deriv()) < 0.2 && fabs(right_pid.get_deriv()) < 0.2) {
+		if (pros::millis() - stime > timeout) {
+			break;
+		}
+
+		if (fabs((l_reading + r_reading)/2 - target) < 20 && fabs(left_pid.get_deriv()) < 0.2 && fabs(right_pid.get_deriv()) < 0.2) {
 			break;
 		}
 		// get readings
@@ -48,10 +51,9 @@ void move(float target) {
 }
 
 
-void turn(float degrees) {
+void turn(float degrees, PID &turn_pid, int timeout) {
 	printf("Turning\n");
 	float turn_factor = 1;
-	PID turn_pid = PID(100, 2, 200, 100000.0f, true);
 	
 	// initial readings
 	float reading = (float)imu.get_heading();
@@ -63,9 +65,15 @@ void turn(float degrees) {
 	turn_pid.set_prev(-err);
 
 	float turn_vol;
+
+	int stime = pros::millis();
 	while (true) {
 		// loop end control
-		if (fabs(err) < 3 && fabs(turn_pid.get_deriv()) < 0.2) {
+		if (pros::millis() - stime > timeout) {
+			break;
+		}
+
+		if (fabs(err) < 4 && fabs(turn_pid.get_deriv()) < 0.5) {
 			break;
 		}
 		// get heading

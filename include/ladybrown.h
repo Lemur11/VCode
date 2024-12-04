@@ -12,9 +12,16 @@ class LadyBrown {
         bool at_target = true;
         void update();
         std::unique_ptr<pros::Task> update_task;
-        PID lb_pid;
+        PID lb_pid = PID(3.0, 0.02, 3.0, 45000.0);
+        LadyBrown() = default;
+	    LadyBrown(const LadyBrown&) = delete;
+	    LadyBrown& operator=(const LadyBrown&) = delete;
     public:
-        LadyBrown();
+        inline static LadyBrown& getInstance() {
+    		static LadyBrown INSTANCE;
+	    	return INSTANCE;
+	    }   
+        void initialize();
         void off();
         bool done();
         void move(int cur_target, bool blocking=false);

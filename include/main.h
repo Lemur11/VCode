@@ -77,12 +77,20 @@ void opcontrol(void);
 //#include <iostream>
 #endif
 
+
 enum lady_brown_state_enum {
     NORMAL,
     FIRST,
-    SECOND,
     MANUAL,
     RESET
 };
+
+enum move_units {
+    DEGREES=1,
+    TILES=1000
+};
+
+#define TILES 1000
+#define DEGREES 1
 
 #endif  // _PROS_MAIN_H_

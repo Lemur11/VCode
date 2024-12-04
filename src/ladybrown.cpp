@@ -1,9 +1,7 @@
 #include "ladybrown.h"
 #include <cmath>
 
-LadyBrown::LadyBrown() : 
-    lb_pid(3.0, 0.02, 3.0, 45000.0) 
-    {
+void LadyBrown::initialize() {
     update_task = std::make_unique<pros::Task>([this](){
         while(true) {
             update();
@@ -22,6 +20,9 @@ void LadyBrown::update() {
     }
     if (on) {
         int reading = rot.get_position();
+        if (reading > 25000) {
+            reading = -(36000-reading);
+        }
         lady_brown.move_voltage(lb_pid.cycle(target, reading));
     }
 }

@@ -39,3 +39,9 @@ float PID::get_prev() {
 float PID::get_deriv() {
     return delta;
 }
+
+void PID::set_consts(float kp, float ki, float kd) {
+    this->kp = kp;
+    this->ki = ki;
+    this->kd = kd;
+}

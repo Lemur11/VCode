@@ -1,15 +1,21 @@
 #include "main.h"
 #include "devices.h"
-#include "ladybrown.h"
 #include "utils.h"
 #include "motions.h"
+#include "autons.h"
+#include "ladybrown.h"
 #include <cstdio>
 
 
 // init lady brown class and state var
-LadyBrown lb = LadyBrown();
+LadyBrown& lb = LadyBrown::getInstance();
 lady_brown_state_enum lady_brown_state = lady_brown_state_enum::NORMAL;
 
+
+void on_center_button() {
+	left_motor.tare_position();
+	right_motor.tare_position();
+}
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -17,6 +23,14 @@ lady_brown_state_enum lady_brown_state = lady_brown_state_enum::NORMAL;
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	rot.reset();
+	rot.set_position(500);
+
+	lb.initialize();
+	lb.move(0);
+
+	pros::lcd::register_btn1_cb(on_center_button);
+
 	pros::lcd::initialize();
 	pros::lcd::set_text(1, "Hello PROS User!");
 
@@ -33,9 +47,6 @@ void initialize() {
 	right_motor.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
 	left_motor.tare_position();
 	right_motor.tare_position();
-
-	rot.reset();
-	rot.reset_position();
 
 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
@@ -96,14 +107,9 @@ void opcontrol() {
 	int reading;
 	int lb_vol;
 
-	move(1000);
-	turn(90);
-	move(1000);
-	turn(90);
-	move(1000);
-	turn(90);
-	move(1000);
-	turn(90);
+	//skills
+	skills();
+	pros::delay(4000);
 
 	printf("OPCONTROL\n");
 	while (true) {
@@ -113,7 +119,7 @@ void opcontrol() {
 		left_motors.move(dir + turn_p);                      // Sets left motor voltage
 		right_motors.move(dir - turn_p);                     // Sets right motor voltage
 
-		pros::lcd::print(1, "%f, %f", left_motor.get_position(), right_motor.get_position());
+		pros::lcd::print(1, "%f, %f, %f", left_motor.get_position(), right_motor.get_position(), imu.get_heading());
 	
 		// button logic
 		// use toggle (on rising edge)
@@ -153,7 +159,7 @@ void opcontrol() {
 				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 				if (controller.get_digital_new_press(DIGITAL_A)) {
 					lady_brown_state = FIRST;
-					lb.move(3500);
+					lb.move(6000);
 				}
 				break;
 			}
@@ -161,14 +167,6 @@ void opcontrol() {
 			{
 				if (controller.get_digital_new_press(DIGITAL_A)) {
 					printf("Done\n");
-					lb.move(5000);
-					lady_brown_state = SECOND;
-				}
-				break;
-			}
-			case SECOND:
-			{
-				if (controller.get_digital_new_press(DIGITAL_A)) {
 					lb.off();
 					lady_brown_state = MANUAL;
 				}
@@ -182,13 +180,7 @@ void opcontrol() {
 					lb_vol = 8000;
 				}
 				else if (controller.get_digital_new_press(DIGITAL_A)) {
-					left_motors.move_voltage(10000);
-					right_motors.move_voltage(10000);
-					pros::delay(300);
 					lb.move(1000);
-					pros::delay(500);
-					left_motors.move_voltage(0);
-					right_motors.move_voltage(0);
 					lady_brown_state = RESET;
 				}
 				else if (controller.get_digital(DIGITAL_L2)) {
@@ -197,7 +189,7 @@ void opcontrol() {
 				else {
 					lb_vol = 0;
 				}
-				if (rot.get_position() > 15000) {
+				if (rot.get_position() > 17000) {
 					lady_brown.move_voltage(std::min(0, lb_vol));
 				}
 				else {
@@ -208,7 +200,7 @@ void opcontrol() {
 			case RESET:
 			{
 				reading = rot.get_position();
-				if (controller.get_digital(DIGITAL_A)) {
+				if (controller.get_digital_new_press(DIGITAL_A)) {
 					lady_brown_state = NORMAL;
 				} 
 				if (lb.done()) {
