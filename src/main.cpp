@@ -6,9 +6,7 @@
 #include "ladybrown.h"
 #include <cstdio>
 
-
 // init lady brown class and state var
-LadyBrown& lb = LadyBrown::getInstance();
 lady_brown_state_enum lady_brown_state = lady_brown_state_enum::NORMAL;
 
 

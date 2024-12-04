@@ -10,8 +10,6 @@ PID right_pid = PID(25, 0, 90);
 // turn pid
 PID turn_pid = PID(100, 2, 200, 100000.0f, true);
 
-LadyBrown& lb = LadyBrown::getInstance();
-
 void skills() {
     turn_pid.set_consts(250.0, 2.0, 200.0);
 	turn(20, turn_pid, 1000);

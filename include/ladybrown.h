@@ -2,6 +2,7 @@
 #include "pid.h"
 #include "devices.h"
 
+#define lb LadyBrown::getInstance()
 
 class LadyBrown {
     private:
