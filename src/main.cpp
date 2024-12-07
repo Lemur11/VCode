@@ -1,5 +1,6 @@
 #include "main.h"
 #include "devices.h"
+#include "pros/misc.h"
 #include "utils.h"
 #include "motions.h"
 #include "autons.h"
@@ -106,8 +107,7 @@ void opcontrol() {
 	int lb_vol;
 
 	//skills
-	skills();
-	pros::delay(4000);
+	// red_rush2();
 
 	printf("OPCONTROL\n");
 	while (true) {
@@ -130,13 +130,13 @@ void opcontrol() {
 			}
 		}
 		
-		if (controller.get_digital_new_press(DIGITAL_LEFT)) {
+		if (controller.get_digital_new_press(DIGITAL_Y)) {
 			doinker.toggle();
 		}
 
-		if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-			intake_lift.toggle();
-		}
+		// if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+			// intake_lift.toggle();
+		// }
 
 		if (controller.get_digital(DIGITAL_R1)) {
 				intake.move_velocity(intake_vel);
@@ -155,15 +155,15 @@ void opcontrol() {
 				printf("Normal\n");
 				printf("Power %f\n", lady_brown.get_power());
 				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-				if (controller.get_digital_new_press(DIGITAL_A)) {
+				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 					lady_brown_state = FIRST;
-					lb.move(6000);
+					lb.move(5600);
 				}
 				break;
 			}
 			case FIRST:
 			{
-				if (controller.get_digital_new_press(DIGITAL_A)) {
+				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 					printf("Done\n");
 					lb.off();
 					lady_brown_state = MANUAL;
@@ -177,7 +177,7 @@ void opcontrol() {
 				if (controller.get_digital(DIGITAL_L1)) {
 					lb_vol = 8000;
 				}
-				else if (controller.get_digital_new_press(DIGITAL_A)) {
+				else if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 					lb.move(1000);
 					lady_brown_state = RESET;
 				}
@@ -187,7 +187,7 @@ void opcontrol() {
 				else {
 					lb_vol = 0;
 				}
-				if (rot.get_position() > 17000) {
+				if (rot.get_position() > 19000) {
 					lady_brown.move_voltage(std::min(0, lb_vol));
 				}
 				else {
@@ -198,7 +198,7 @@ void opcontrol() {
 			case RESET:
 			{
 				reading = rot.get_position();
-				if (controller.get_digital_new_press(DIGITAL_A)) {
+				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 					lady_brown_state = NORMAL;
 				} 
 				if (lb.done()) {

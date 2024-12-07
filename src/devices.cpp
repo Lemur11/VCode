@@ -1,5 +1,6 @@
 #include "main.h"
 #include "pros/adi.hpp"
+#include "pros/distance.hpp"
 
 // motors
 pros::MotorGroup left_motors = pros::MotorGroup({-9, 10, -20});
@@ -24,3 +25,5 @@ pros::Controller controller = pros::Controller(pros::E_CONTROLLER_MASTER);
 pros::Imu imu = pros::Imu(2);
 
 pros::Rotation rot = pros::Rotation(18);
+pros::Distance mogod = pros::Distance(3);
+pros::Distance intakeD = pros::Distance(14);

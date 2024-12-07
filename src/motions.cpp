@@ -5,7 +5,7 @@
 #include "utils.h"
 
 
-void move(float target, PID &left_pid, PID &right_pid, int units, int timeout) {
+void move(float target, PID &left_pid, PID &right_pid, int units, int timeout, int exit_dist) {
     target = target * units;
 
 	// reset motor encoder readings
@@ -25,6 +25,12 @@ void move(float target, PID &left_pid, PID &right_pid, int units, int timeout) {
 	int stime = pros::millis();
 	while (true) {
 		// exit condition
+		if (exit_dist != 0) {
+			if (fabs((l_reading + r_reading)/2 - target) < exit_dist) {
+				break;
+			}
+		}
+
 		if (pros::millis() - stime > timeout) {
 			break;
 		}
@@ -101,14 +107,13 @@ void turn(float degrees, PID &turn_pid, int timeout) {
 	right_motors.move_velocity(0);
 }
 
-void turn_to_heading(float degrees) {
-    printf("Turning\n");
+void turn_to_heading(float degrees, PID &turn_pid, int timeout) {
+	printf("Turning\n");
 	float turn_factor = 1;
-	PID turn_pid = PID(100, 2, 200, 100000.0f, true);
 	
 	// initial readings
 	float reading = (float)imu.get_heading();
-    float target = degrees;
+	float target = degrees;
 	printf("Target: %f\n", target);
 	float err = wrap(target, reading);
 	
@@ -116,9 +121,15 @@ void turn_to_heading(float degrees) {
 	turn_pid.set_prev(-err);
 
 	float turn_vol;
+
+	int stime = pros::millis();
 	while (true) {
 		// loop end control
-		if (fabs(err) < 3 && fabs(turn_pid.get_deriv()) < 0.2) {
+		if (pros::millis() - stime > timeout) {
+			break;
+		}
+
+		if (fabs(err) < 4 && fabs(turn_pid.get_deriv()) < 0.5) {
 			break;
 		}
 		// get heading
