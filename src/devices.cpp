@@ -9,7 +9,7 @@ pros::MotorGroup right_motors = pros::MotorGroup({11, -12, 1});
 pros::Motor left_motor = pros::Motor(-9);
 pros::Motor right_motor = pros::Motor(11);
 
-pros::Motor lady_brown = pros::Motor(19);
+pros::Motor lady_brown = pros::Motor(16);
 
 pros::Motor intake = pros::Motor(17);
 

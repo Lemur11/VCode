@@ -151,8 +151,8 @@ void red_rush2() {
 		pros::delay(20);
 	}
 	pros::delay(1000);
-	doinker.extend();
 	move(1850, left_pid, right_pid, DEGREES, 700);
+	doinker.extend();
 	turn(-30, turn_pid, 500);
 	move(500, left_pid, right_pid, DEGREES, 500);
 	turn_pid.set_consts(200.0, 2.0, 200.0);
@@ -190,4 +190,99 @@ void red_rush2() {
 	// move(1800, left_pid, right_pid);
 	}
 
+}
+
+
+void red_awp() {
+	move(300, left_pid, right_pid, DEGREES, 1000);
+	lb.move(18000);
+	int stime = pros::millis();
+	while (!lb.done()) {
+		if (pros::millis() - stime > 3000) {
+			break;
+		}
+		pros::delay(20);
+	}
+	lb.move(0);
+	move(-1220, left_pid, right_pid);
+	turn_pid.set_consts(300.0, 2.0, 200.0);
+	turn(48, turn_pid, 1000);
+	move(-1000, left_pid, right_pid);
+	mogo.extend();
+	move(500, left_pid, right_pid);
+	pros::delay(500);
+	turn_pid.set_consts(200.0, 2.0, 200.0);
+	turn(130, turn_pid, 1500);
+	intake.move_velocity(600);
+	move(1460, left_pid, right_pid, DEGREES, 2000);
+	pros::delay(1500);
+	move(-1020, left_pid, right_pid);
+	turn(-48, turn_pid, 1000);
+	move(1000, left_pid, right_pid);
+	pros::delay(700);
+	turn(170, turn_pid, 1500);
+	move(2000, left_pid, right_pid);
+}
+
+void blue_awp() {
+	move(300, left_pid, right_pid, DEGREES, 1000);
+	lb.move(18000);
+	int stime = pros::millis();
+	while (!lb.done()) {
+		if (pros::millis() - stime > 3000) {
+			break;
+		}
+		pros::delay(20);
+	}
+	lb.move(0);
+	move(-1170, left_pid, right_pid);
+	turn_pid.set_consts(300.0, 2.0, 200.0);
+	turn_to_heading(-57, turn_pid, 1000);
+	move(-1200, left_pid, right_pid);
+	mogo.extend();
+	pros::delay(500);
+	move(700, left_pid, right_pid);
+	turn_pid.set_consts(200.0, 2.0, 200.0);
+	turn(-145, turn_pid, 1500);
+	intake.move_voltage(12000);
+	move(1460, left_pid, right_pid, DEGREES, 2000);
+	pros::delay(1500);
+	move(-1020, left_pid, right_pid);
+	turn(48, turn_pid, 1000);
+	move(1000, left_pid, right_pid);
+	pros::delay(700);
+	turn(-170, turn_pid, 1500);
+	move(2000, left_pid, right_pid);
+}
+
+void blue_2ring() {
+	left_pid.set_consts(15, 0, 90);
+	right_pid.set_consts(15, 0, 90);
+	move(-1600, left_pid, right_pid, DEGREES, 4000, 300);
+	mogo.extend();
+	pros::delay(500);
+	intake.move_voltage(12000);
+	turn_to_heading(300, turn_pid, 1000);
+	move(1230, left_pid, right_pid, DEGREES, 2000);
+	pros::delay(1000);
+	turn(-170, turn_pid, 1500);
+	move(2000, left_pid, right_pid);
+}
+
+void red_mogo() {
+	left_pid.set_consts(15, 0, 90);
+	right_pid.set_consts(15, 0, 90);
+	move(-1600, left_pid, right_pid, DEGREES, 4000, 300);
+	pros::delay(500);
+	mogo.extend();
+	pros::delay(700);
+	intake.move_voltage(12000);
+	turn_to_heading(60, turn_pid, 1000);
+	move(1230, left_pid, right_pid, DEGREES, 2000);
+	while (intakeD.get() > 40) {
+		pros::delay(20);
+	}
+	pros::delay(400);
+	intake.move_voltage(0);
+	turn(-70, turn_pid);
 }

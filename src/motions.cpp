@@ -79,7 +79,7 @@ void turn(float degrees, PID &turn_pid, int timeout) {
 			break;
 		}
 
-		if (fabs(err) < 4 && fabs(turn_pid.get_deriv()) < 0.5) {
+		if (fabs(err) < 2 && fabs(turn_pid.get_deriv()) < 0.5) {
 			break;
 		}
 		// get heading

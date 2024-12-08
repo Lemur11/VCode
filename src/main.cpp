@@ -82,7 +82,9 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	red_mogo();
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -105,9 +107,6 @@ void opcontrol() {
 	int cur_target;
 	int reading;
 	int lb_vol;
-
-	//skills
-	// red_rush2();
 
 	printf("OPCONTROL\n");
 	while (true) {
@@ -157,7 +156,7 @@ void opcontrol() {
 				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 					lady_brown_state = FIRST;
-					lb.move(5600);
+					lb.move(5400);
 				}
 				break;
 			}
