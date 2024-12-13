@@ -92,5 +92,6 @@ enum move_units {
 
 #define TILES 1000
 #define DEGREES 1
+#define INCHES 35.2589412
 
 #endif  // _PROS_MAIN_H_

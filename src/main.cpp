@@ -5,6 +5,7 @@
 #include "motions.h"
 #include "autons.h"
 #include "ladybrown.h"
+#include "odom.h"
 #include <cstdio>
 
 // init lady brown class and state var
@@ -49,6 +50,7 @@ void initialize() {
 
 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
+	tracking = new pros::Task(track, TASK_PRIORITY_MAX,TASK_STACK_DEPTH_DEFAULT, "tracking");
 	// lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
 }
@@ -83,7 +85,6 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	red_mogo();
 }
 
 /**
@@ -117,7 +118,8 @@ void opcontrol() {
 		right_motors.move(dir - turn_p);                     // Sets right motor voltage
 
 		pros::lcd::print(1, "%f, %f, %f", left_motor.get_position(), right_motor.get_position(), imu.get_heading());
-	
+		pros::lcd::print(2, "Back: %d", backEncoder.get_position());
+		pros::lcd::print(3, "X: %f, Y: %f, Head: %f", x, y, angle/M_PI * 180.0);
 		// button logic
 		// use toggle (on rising edge)
 		if (lady_brown_state != lady_brown_state_enum::MANUAL) {
@@ -156,7 +158,7 @@ void opcontrol() {
 				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 					lady_brown_state = FIRST;
-					lb.move(5400);
+					lb.move(4100);
 				}
 				break;
 			}

@@ -5,7 +5,7 @@
 #include "utils.h"
 
 
-void move(float target, PID &left_pid, PID &right_pid, int units, int timeout, int exit_dist) {
+void move(float target, PID &left_pid, PID &right_pid, float units, int timeout, int exit_dist) {
     target = target * units;
 
 	// reset motor encoder readings
@@ -156,3 +156,5 @@ void turn_to_heading(float degrees, PID &turn_pid, int timeout) {
 	left_motors.move_velocity(0);
 	right_motors.move_velocity(0);
 }
+
+// void trap_profile()

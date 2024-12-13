@@ -22,7 +22,7 @@ int joystick(int inp) {
 
 float target_cal(float x) {
 	if (x < 0) {
-		return 360 - x;
+		return 360 + x;
 	}
 	else {
 		return fmod(x, 360);

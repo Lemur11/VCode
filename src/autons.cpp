@@ -286,3 +286,7 @@ void red_mogo() {
 	intake.move_voltage(0);
 	turn(-70, turn_pid);
 }
+
+void test() {
+	move(48, left_pid, right_pid, INCHES);
+}
