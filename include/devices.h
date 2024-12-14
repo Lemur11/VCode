@@ -1,13 +1,12 @@
 #include "main.h"
-#include "pros/distance.hpp"
-#include "pros/motor_group.hpp"
-#include "pros/rotation.hpp"
 
 extern pros::MotorGroup left_motors;
 extern pros::MotorGroup right_motors;
 
-extern pros::Motor left_motor;
-extern pros::Motor right_motor;
+extern lemlib::Chassis chassis;
+
+extern lemlib::ControllerSettings lateral_PID;
+extern lemlib::ControllerSettings angular_PID;
 
 extern pros::Motor lady_brown;
 
@@ -24,5 +23,3 @@ extern pros::Imu imu;
 extern pros::Rotation rot;
 extern pros::Distance mogod;
 extern pros::Distance intakeD;
-
-extern pros::Rotation backEncoder;

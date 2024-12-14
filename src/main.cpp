@@ -2,20 +2,12 @@
 #include "devices.h"
 #include "pros/misc.h"
 #include "utils.h"
-#include "motions.h"
 #include "autons.h"
 #include "ladybrown.h"
-#include "odom.h"
-#include <cstdio>
 
 // init lady brown class and state var
 lady_brown_state_enum lady_brown_state = lady_brown_state_enum::NORMAL;
 
-
-void on_center_button() {
-	left_motor.tare_position();
-	right_motor.tare_position();
-}
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -23,35 +15,30 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	pros::lcd::initialize();
+	pros::lcd::set_text(1, "Initializing");
+	chassis.calibrate();
+
 	rot.reset();
 	rot.set_position(500);
 
 	lb.initialize();
 	lb.move(0);
 
-	pros::lcd::register_btn1_cb(on_center_button);
-
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
-
-	// imu calibration
-	imu.reset(true);
-	imu.tare();
-
-	// reset motors and motor encoders
-	left_motors.set_gearing_all(pros::E_MOTOR_GEARSET_06);
-	right_motors.set_gearing_all(pros::E_MOTOR_GEARSET_06);
-	left_motor.set_gearing(pros::E_MOTOR_GEARSET_06);
-	right_motor.set_gearing(pros::E_MOTOR_GEARSET_06);
-	left_motor.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
-	right_motor.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
-	left_motor.tare_position();
-	right_motor.tare_position();
-
 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
-	tracking = new pros::Task(track, TASK_PRIORITY_MAX,TASK_STACK_DEPTH_DEFAULT, "tracking");
-	// lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+	pros::Task screenTask([&]() {
+        while (true) {
+            // print robot location to the brain screen
+            pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
+            pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
+            pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
+            // log position telemetry
+            lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
+            // delay to save resources
+            pros::delay(50);
+        }
+    });
 
 }
 
@@ -85,6 +72,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+	skills();
 }
 
 /**
@@ -114,12 +102,8 @@ void opcontrol() {
 		// Arcade control scheme with deadzones
 		int dir = joystick(controller.get_analog(ANALOG_LEFT_Y));    // Gets amount forward/backward from left joystick
 		int turn_p = joystick(controller.get_analog(ANALOG_RIGHT_X));  // Gets the turn left/right from right joystick
-		left_motors.move(dir + turn_p);                      // Sets left motor voltage
-		right_motors.move(dir - turn_p);                     // Sets right motor voltage
+		chassis.arcade(dir, turn_p);
 
-		pros::lcd::print(1, "%f, %f, %f", left_motor.get_position(), right_motor.get_position(), imu.get_heading());
-		pros::lcd::print(2, "Back: %d", backEncoder.get_position());
-		pros::lcd::print(3, "X: %f, Y: %f, Head: %f", x, y, angle/M_PI * 180.0);
 		// button logic
 		// use toggle (on rising edge)
 		if (lady_brown_state != lady_brown_state_enum::MANUAL) {

@@ -77,6 +77,7 @@ void opcontrol(void);
 //#include <iostream>
 #endif
 
+#include "lemlib/api.hpp"
 
 enum lady_brown_state_enum {
     NORMAL,
