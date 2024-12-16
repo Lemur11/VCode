@@ -78,6 +78,7 @@ void opcontrol(void);
 #endif
 
 #include "lemlib/api.hpp"
+#include "robodash/api.h"
 
 enum lady_brown_state_enum {
     NORMAL,

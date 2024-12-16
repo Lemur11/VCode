@@ -13,3 +13,8 @@ void skills() {
 	chassis.turnToHeading(315, 4000, {.maxSpeed=70});
 	chassis.turnToHeading(0, 4000, {.maxSpeed=70});
 }
+
+void twelveInch() {
+	chassis.setPose({0, 0, 0});
+	chassis.moveToPoint(0, 12, 4000);
+}

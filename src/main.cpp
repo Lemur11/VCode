@@ -1,12 +1,20 @@
 #include "main.h"
 #include "devices.h"
 #include "pros/misc.h"
+#include "robodash/views/console.hpp"
 #include "utils.h"
 #include "autons.h"
 #include "ladybrown.h"
 
 // init lady brown class and state var
 lady_brown_state_enum lady_brown_state = lady_brown_state_enum::NORMAL;
+
+rd::Selector selector({
+    {"Skills", skills},
+	{"Move 12", twelveInch}
+});
+
+rd::Console console;
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -15,8 +23,6 @@ lady_brown_state_enum lady_brown_state = lady_brown_state_enum::NORMAL;
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Initializing");
 	chassis.calibrate();
 
 	rot.reset();
@@ -29,10 +35,11 @@ void initialize() {
 
 	pros::Task screenTask([&]() {
         while (true) {
+			console.clear();
             // print robot location to the brain screen
-            pros::lcd::print(0, "X: %f", chassis.getPose().x); // x
-            pros::lcd::print(1, "Y: %f", chassis.getPose().y); // y
-            pros::lcd::print(2, "Theta: %f", chassis.getPose().theta); // heading
+            console.printf( "X: %f\n", chassis.getPose().x); // x
+            console.printf( "Y: %f\n", chassis.getPose().y); // y
+            console.printf( "Theta: %f\n", chassis.getPose().theta); // heading
             // log position telemetry
             lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
             // delay to save resources
@@ -72,7 +79,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	skills();
+	selector.run_auton();
 }
 
 /**
