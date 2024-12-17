@@ -23,7 +23,12 @@ void LadyBrown::update() {
         if (reading > 25000) {
             reading = -(36000-reading);
         }
-        lady_brown.move_voltage(lb_pid.cycle(target, reading));
+        float vol = lb_pid.cycle(target, reading);
+        // printf("Vol: %f\n", vol);
+        float angle_rad = (11400.0f - reading)/100.0 * (M_PI / 180.0f);
+        printf("Angle rad: %f\n", angle_rad);
+        printf("FF: %f\n", ff_K * sin(angle_rad));
+        lady_brown.move_voltage(vol + ff_K * sin(angle_rad));
     }
 }
 

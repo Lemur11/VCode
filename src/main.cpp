@@ -1,6 +1,7 @@
 #include "main.h"
 #include "devices.h"
 #include "pros/misc.h"
+#include "robodash/core.h"
 #include "robodash/views/console.hpp"
 #include "utils.h"
 #include "autons.h"
@@ -16,6 +17,15 @@ rd::Selector selector({
 
 rd::Console console;
 
+void vibrator() {
+	while (true) {
+		if (!mogo.is_extended()) {
+			controller.rumble(".");
+		}
+		pros::delay(200);
+	}
+}
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -29,7 +39,7 @@ void initialize() {
 	rot.set_position(500);
 
 	lb.initialize();
-	lb.move(0);
+	lb.off();
 
 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
@@ -79,7 +89,11 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	selector.run_auton();
+	console.focus();
+	// skills();
+	// lb.move(16000, true);
+	lb.move(4100, true);
+	// selector.run_auton();
 }
 
 /**
@@ -104,12 +118,22 @@ void opcontrol() {
 	int reading;
 	int lb_vol;
 
+	pros::Task vib(vibrator);
+
+	console.focus();
+	
+
 	printf("OPCONTROL\n");
 	while (true) {
 		// Arcade control scheme with deadzones
 		int dir = joystick(controller.get_analog(ANALOG_LEFT_Y));    // Gets amount forward/backward from left joystick
 		int turn_p = joystick(controller.get_analog(ANALOG_RIGHT_X));  // Gets the turn left/right from right joystick
 		chassis.arcade(dir, turn_p);
+
+		if (controller.get_digital_new_press(DIGITAL_X)) {
+			printf("%f, %f, %f\n", chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
+		}
+
 
 		// button logic
 		// use toggle (on rising edge)
@@ -144,8 +168,8 @@ void opcontrol() {
 			case NORMAL:
 			{
 				lb.off();
-				printf("Normal\n");
-				printf("Power %f\n", lady_brown.get_power());
+				// printf("Normal\n");
+				// printf("Power %f\n", lady_brown.get_power());
 				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 					lady_brown_state = FIRST;
@@ -166,14 +190,14 @@ void opcontrol() {
 			{
 				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 				printf("Manual\n");
-				if (controller.get_digital(DIGITAL_L1)) {
+				if (controller.get_digital(DIGITAL_DOWN)) {
 					lb_vol = 8000;
 				}
 				else if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 					lb.move(1000);
 					lady_brown_state = RESET;
 				}
-				else if (controller.get_digital(DIGITAL_L2)) {
+				else if (controller.get_digital(DIGITAL_UP)) {
 					lb_vol = -8000;
 				}
 				else {

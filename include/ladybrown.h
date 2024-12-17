@@ -9,11 +9,12 @@ class LadyBrown {
         int target = 0;
         int pos_deadzone = 100;
         int vel_deadzone = 10;
+        int ff_K = 500;
         bool on = true;
         bool at_target = true;
         void update();
         std::unique_ptr<pros::Task> update_task;
-        PID lb_pid = PID(3.0, 0.02, 3.0, 45000.0);
+        PID lb_pid = PID(3.0, 0.0, 3.0, 45000.0);
         LadyBrown() = default;
 	    LadyBrown(const LadyBrown&) = delete;
 	    LadyBrown& operator=(const LadyBrown&) = delete;

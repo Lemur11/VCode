@@ -1,7 +1,6 @@
 #include "main.h"
 #include "pid.h"
 #include "utils.h"
-#include <algorithm>
 
 PID::PID(float p, float i, float d, float windup_val, bool integral_zero_at_sign_change) : 
         kp(p), ki(i), kd(d), windup(windup_val), zero_at_sign_change(integral_zero_at_sign_change) {};

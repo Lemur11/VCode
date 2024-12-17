@@ -20,6 +20,8 @@ extern pros::Controller controller;
 
 extern pros::Imu imu;
 
+extern pros::Rotation horizontal_encoder;
+
 extern pros::Rotation rot;
 extern pros::Distance mogod;
 extern pros::Distance intakeD;

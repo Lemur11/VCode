@@ -22,7 +22,7 @@ pros::Imu imu = pros::Imu(2);
 // horizontal tracking wheel encoder
 pros::Rotation horizontal_encoder(3);
 // horizontal tracking wheel
-lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_325, -6.7675);
+lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_325, -1.911); //6.7676
 // vertical tracking wheel encoder
 // TODO: NOT HERE YET
 // vertical tracking wheel
