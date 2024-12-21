@@ -1,3 +1,5 @@
+#pragma once
+
 #include "main.h"
 #include "pid.h"
 #include "devices.h"
