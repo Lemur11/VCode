@@ -1,24 +1,46 @@
 #include "main.h"
+
+#include <atomic>
+
 #include "devices.h"
-#include "pros/misc.h"
-#include "robodash/core.h"
-#include "robodash/views/console.hpp"
 #include "utils.h"
 #include "autons.h"
 #include "ladybrown.h"
 
+std::vector<pros::controller_digital_e_t> buttons{DIGITAL_A, DIGITAL_B, DIGITAL_X, DIGITAL_Y, DIGITAL_LEFT,
+												DIGITAL_RIGHT, DIGITAL_R1, DIGITAL_R2, DIGITAL_L1, DIGITAL_L2};
+
+#define press(button) 	while (!controller.get_digital(button)) {pros::delay(20);}
+#define pressOnly(button) while (!controller.get_digital(button)) { \
+	for (auto but : buttons) { \
+		if (but == button) {continue;} \
+		else if (controller.get_digital(but)) {while (1){pros::delay(20);}} \
+	} \
+	pros::delay(20);}
+
+
 // init lady brown class and state var
 lady_brown_state_enum lady_brown_state = lady_brown_state_enum::NORMAL;
+color_enum color = color_enum::NONE;
 
 rd::Selector selector({
-    {"Skills", skills},
-	{"Move 12", twelveInch}
+    // {"Test", test},
+	{"elims", elims},
+	{"Move 12", twelveInch},
+	{"Blue Left", blueLeftSide},
+{"Red Left", redLeftSide},
+
+	{"Red Right", redRightSide},
+	{"Blue Right", blueRightSide},
 });
 
 rd::Console console;
 
+std::atomic<bool> sorting{false};
+std::atomic<bool> antiJam{false};
+
 void vibrator() {
-	while (true) {
+	while (0) {
 		if (!mogo.is_extended()) {
 			controller.rumble(".");
 		}
@@ -34,14 +56,56 @@ void vibrator() {
  */
 void initialize() {
 	chassis.calibrate();
+	chassis.setPose(0, 0, 360-120);
 
-	rot.reset();
-	rot.set_position(500);
+	lady_brown.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+	lady_brown.set_gearing(pros::E_MOTOR_GEAR_RED);
+	lady_brown.set_zero_position(0);
 
 	lb.initialize();
 	lb.off();
 
 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+	pros::Task([&]() {
+		int counter = 0;
+		while (true) {
+			if (antiJam && !sorting && intake.get_actual_velocity() < 10) {
+				if (counter > 100) {
+					intake.move_velocity(-600);
+					pros::delay(400);
+					intake.move_velocity(600);
+					pros::delay(100);
+					counter = 0;
+				}
+				else {counter++;}
+
+			}
+			pros::delay(20);
+		}
+	});
+
+	pros::Task([&]() {
+		intakeC.set_led_pwm(100);
+		while (true) {
+			if (intakeD.get() < 70) {
+				sorting = true;
+				if (color == RED && intakeC.get_hue() < 40) {
+					pros::delay(200);
+					intake.move_velocity(-600);
+					pros::delay(400);
+					intake.move_velocity(600);
+				}
+				else if (color == BLUE && intakeC.get_hue() > 120) {
+					pros::delay(200);
+					intake.move_velocity(-600);
+					pros::delay(400);
+					intake.move_velocity(600);
+				}
+			}
+			else {sorting = false;}
+			pros::delay(10);
+		}
+	});
 
 	pros::Task screenTask([&]() {
         while (true) {
@@ -90,10 +154,7 @@ void competition_initialize() {}
  */
 void autonomous() {
 	console.focus();
-	// skills();
-	// lb.move(16000, true);
-	lb.move(4100, true);
-	// selector.run_auton();
+	selector.run_auton();
 }
 
 /**
@@ -121,7 +182,20 @@ void opcontrol() {
 	pros::Task vib(vibrator);
 
 	console.focus();
-	
+
+	color = NONE;
+
+	lady_brown_state = NORMAL;
+
+
+
+	// pros::delay(200);
+	// while (controller.get_analog(ANALOG_LEFT_Y) > -5) {pros::delay(20);}
+
+
+	// press(DIGITAL_X)
+	// press(DIGITAL_Y)
+
 
 	printf("OPCONTROL\n");
 	while (true) {
@@ -134,21 +208,23 @@ void opcontrol() {
 			printf("%f, %f, %f\n", chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
 		}
 
+		if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+			mogo.extend();
+		}
+		else if (controller.get_digital_new_press(DIGITAL_Y)) {
+			mogo.retract();
+		}
 
 		// button logic
 		// use toggle (on rising edge)
-		if (lady_brown_state != lady_brown_state_enum::MANUAL) {
-			if (controller.get_digital_new_press(DIGITAL_L1)) {
-				mogo.extend();
-			} 
-			else if (controller.get_digital_new_press(DIGITAL_L2)) {
-				mogo.retract();
-			}
-		}
+		// if (controller.get_digital_new_press(DIGITAL_DOWN)) {
+		// 	lb.move(7000);
+		// }
 		
-		if (controller.get_digital_new_press(DIGITAL_Y)) {
+		if (controller.get_digital_new_press(DIGITAL_A)) {
 			doinker.toggle();
 		}
+
 
 		// if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 			// intake_lift.toggle();
@@ -164,69 +240,56 @@ void opcontrol() {
 			intake.move_velocity(0);
 		}
 
-		switch(lady_brown_state) {
-			case NORMAL:
-			{
-				lb.off();
-				// printf("Normal\n");
-				// printf("Power %f\n", lady_brown.get_power());
-				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-					lady_brown_state = FIRST;
-					lb.move(4100);
-				}
-				break;
-			}
-			case FIRST:
-			{
-				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-					printf("Done\n");
+		if (controller.get_digital_new_press(DIGITAL_UP)) {
+			intake_lift.toggle();
+		}
+
+		if (controller.get_digital(DIGITAL_L2)) {
+			lb.off();
+			lady_brown.move_voltage(-12000);
+		}
+		else if (!lb.isOn()) {
+			lady_brown.move_voltage(0);
+		}
+		if (1) {
+			switch(lady_brown_state) {
+				case NORMAL:
+				{
 					lb.off();
-					lady_brown_state = MANUAL;
+					printf("Normal\n");
+					// printf("Power %f\n", lady_brown.get_power());
+					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+					if (controller.get_digital_new_press(DIGITAL_L1)) {
+						lady_brown_state = FIRST;
+						lb.move(-29);
+					}
+					break;
 				}
-				break;
+				case FIRST:
+				{
+					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+					if (controller.get_digital_new_press(DIGITAL_L1)) {
+						lady_brown_state = RESET;
+						lb.move(-27);
+					}
+					break;
+				}
+				case RESET:
+				{
+					if (controller.get_digital_new_press(DIGITAL_L1)) {
+						lady_brown_state = NORMAL;
+					}
+					if (lb.done()) {
+						printf("EXIT\n");
+						lb.off();
+						lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+						printf("Coasting\n");
+						lady_brown_state = NORMAL;
+					}
+					break;
+				}
+
 			}
-			case MANUAL:
-			{
-				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-				printf("Manual\n");
-				if (controller.get_digital(DIGITAL_DOWN)) {
-					lb_vol = 8000;
-				}
-				else if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-					lb.move(1000);
-					lady_brown_state = RESET;
-				}
-				else if (controller.get_digital(DIGITAL_UP)) {
-					lb_vol = -8000;
-				}
-				else {
-					lb_vol = 0;
-				}
-				if (rot.get_position() > 19000) {
-					lady_brown.move_voltage(std::min(0, lb_vol));
-				}
-				else {
-					lady_brown.move_voltage(lb_vol);
-				}
-				break;
-			}
-			case RESET:
-			{
-				reading = rot.get_position();
-				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-					lady_brown_state = NORMAL;
-				} 
-				if (lb.done()) {
-					printf("EXIT\n");
-					lb.off();
-					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-					printf("Coasting\n");
-					lady_brown_state = NORMAL;
-				}
-				break;
-			}
-			
 		}
 
 		pros::delay(20);                               // Run for 20 ms then update

@@ -1,2 +1,14 @@
 void skills();
 void twelveInch();
+void red_awp();
+void solo_awp();
+void red_rings();
+void blue_rings();
+void blueLeft2();
+void redRight2();
+void elims();
+void redRightSide();
+void redLeftSide();
+void blueRightSide();
+void blueLeftSide();
+void test();

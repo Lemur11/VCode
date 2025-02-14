@@ -83,7 +83,6 @@ void opcontrol(void);
 enum lady_brown_state_enum {
     NORMAL,
     FIRST,
-    MANUAL,
     RESET
 };
 
@@ -91,6 +90,15 @@ enum move_units {
     DEGREES=1,
     TILES=1000
 };
+
+enum color_enum {
+    NONE,
+    RED,
+    BLUE,
+};
+
+extern color_enum color;
+extern std::atomic<bool> antiJam;
 
 #define TILES 1000
 #define DEGREES 1

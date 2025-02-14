@@ -10,7 +10,7 @@ extern lemlib::ControllerSettings angular_PID;
 
 extern pros::Motor lady_brown;
 
-extern pros::MotorGroup intake;
+extern pros::Motor intake;
 
 extern pros::adi::Pneumatics mogo;
 extern pros::adi::Pneumatics doinker;
@@ -25,3 +25,4 @@ extern pros::Rotation horizontal_encoder;
 extern pros::Rotation rot;
 extern pros::Distance mogod;
 extern pros::Distance intakeD;
+extern pros::Optical intakeC;
