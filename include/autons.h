@@ -12,3 +12,6 @@ void redLeftSide();
 void blueRightSide();
 void blueLeftSide();
 void test();
+void sbhsringv1();
+void sbhsringmir();
+void sbhsnotring();

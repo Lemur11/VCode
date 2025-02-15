@@ -719,3 +719,61 @@ void blueRightSide() {
 	antiJam = true;
 	chassis.moveToPoint(0, 40, 2000);
 }
+
+
+void sbhsringv1() {
+	chassis.setPose(0, 0, 310);
+	lb.move(-160, true);
+	pros::delay(700);
+	chassis.moveToPoint(4, -4, 1000, {.forwards = false});
+	chassis.turnToPoint(13.22, -24.43, 1000, {.forwards = false});
+	chassis.moveToPoint(13.22, -24.43, 1000, {.forwards = false, .earlyExitRange = 7});
+	chassis.moveToPoint(15.95, -30.65, 1000, {.forwards = false, .minSpeed = 60});
+	chassis.waitUntilDone();
+	mogo.extend();
+	pros::delay(500);
+	chassis.turnToPoint(31.1, -37.73, 1000);
+	intake.move_velocity(600);
+	chassis.moveToPoint(31.1, -37.73, 1000);
+	antiJam = true;
+	chassis.moveToPoint(43.2, -32.51, 1000);
+	chassis.turnToPoint(39.68, -18.74, 1000);
+	chassis.moveToPoint(39.68, -18.74, 1000);
+}
+
+void sbhsringmir() {
+	chassis.setPose(0, 0, 360-310);
+	lb.move(-160, true);
+	pros::delay(700);
+	chassis.moveToPoint(-4, -4, 1000, {.forwards = false});
+	chassis.turnToPoint(-13.22, -24.43, 1000, {.forwards = false});
+	chassis.moveToPoint(-13.22, -24.43, 1000, {.forwards = false, .earlyExitRange = 7});
+	chassis.moveToPoint(-15.95, -30.65, 1000, {.forwards = false, .minSpeed = 60});
+	chassis.waitUntilDone();
+	mogo.extend();
+	pros::delay(500);
+	chassis.turnToPoint(-31.1, -37.73, 1000);
+	intake.move_velocity(600);
+	chassis.moveToPoint(-31.1, -37.73, 1000);
+	antiJam = true;
+	chassis.moveToPoint(-43.2, -32.51, 1000);
+	chassis.turnToPoint(-39.68, -18.74, 1000);
+	chassis.moveToPoint(-39.68, -18.74, 1000);
+}
+
+void sbhsnotring() {
+	chassis.setPose(0, 0, 360-310);
+	lb.move(-160, true);
+	pros::delay(700);
+	chassis.moveToPoint(-4, -4, 1000, {.forwards = false});
+	chassis.turnToPoint(-13.22, -24.43, 1000, {.forwards = false});
+	lb.move(100);
+	chassis.moveToPoint(-13.22, -24.43, 1000, {.forwards = false, .earlyExitRange = 7});
+	chassis.moveToPoint(-15.95, -30.65, 1000, {.forwards = false, .minSpeed = 60});
+	chassis.waitUntilDone();
+	mogo.extend();
+	pros::delay(500);
+	intake.move_velocity(600);
+	chassis.turnToPoint(-39.68, -18.74, 1000);
+	chassis.moveToPoint(-39.68, -18.74, 1000);
+}

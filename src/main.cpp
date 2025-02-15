@@ -171,6 +171,11 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
+	sbhsnotring();
+
+	pros::delay(200000);
+
+
 	int intake_vel = 600;
 	left_motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 	right_motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
