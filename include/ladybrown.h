@@ -11,7 +11,7 @@ class LadyBrown {
         int target = 0;
         int pos_deadzone = 100;
         int vel_deadzone = 10;
-        int ff_K = 50; //500
+        int ff_K = 0; //500
         bool on = true;
         bool at_target = true;
         void update();

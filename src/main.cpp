@@ -60,7 +60,7 @@ void initialize() {
 
 	lady_brown.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
 	lady_brown.set_gearing(pros::E_MOTOR_GEAR_RED);
-	lady_brown.set_zero_position(0);
+	lady_brown.tare_position();
 
 	lb.initialize();
 	lb.off();
@@ -184,6 +184,17 @@ void opcontrol() {
 	console.focus();
 
 	color = NONE;
+	lb.off();
+	lady_brown.move_velocity(200);
+	pros::delay(200);
+	while (true) {
+		if (lady_brown.get_actual_velocity() < 10) {
+			lady_brown.move_velocity(0);
+			break;
+		}
+		pros::delay(20);
+	}
+	lady_brown.tare_position();
 
 	lady_brown_state = NORMAL;
 
@@ -261,7 +272,7 @@ void opcontrol() {
 					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 					if (controller.get_digital_new_press(DIGITAL_L1)) {
 						lady_brown_state = FIRST;
-						lb.move(-29);
+						lb.move(-53);
 					}
 					break;
 				}
@@ -270,7 +281,7 @@ void opcontrol() {
 					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 					if (controller.get_digital_new_press(DIGITAL_L1)) {
 						lady_brown_state = RESET;
-						lb.move(-27);
+						lb.move(-37);
 					}
 					break;
 				}
@@ -291,6 +302,7 @@ void opcontrol() {
 
 			}
 		}
+		console.printf("\nLb: %f", lady_brown.get_position());
 
 		pros::delay(20);                               // Run for 20 ms then update
 	}
