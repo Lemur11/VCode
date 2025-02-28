@@ -4,9 +4,9 @@
 #include "pros/motor_group.hpp"
 
 // left motor group
-pros::MotorGroup left_motors({-9, 10, -20}, pros::MotorGears::blue);
+pros::MotorGroup left_motors({11, 9, -14}, pros::MotorGears::blue);
 // right motor group
-pros::MotorGroup right_motors({11, -12, 1}, pros::MotorGears::blue);
+pros::MotorGroup right_motors({17, -15, -12}, pros::MotorGears::blue);
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_motors, // left motor group
@@ -16,6 +16,8 @@ lemlib::Drivetrain drivetrain(&left_motors, // left motor group
                               450, // drivetrain rpm is 450
                               2 // horizontal drift is 2 (for now)
 );
+
+
 
 //imu
 pros::Imu imu = pros::Imu(2);
@@ -77,10 +79,10 @@ lemlib::Chassis chassis(drivetrain, lateral_PID, angular_PID,
                         sensors, &throttleCurve, &steerCurve);
 
 // lb
-pros::Motor lady_brown = pros::Motor(16);
+pros::Motor lady_brown = pros::Motor(20);
 
 // intake
-pros::MotorGroup intake = pros::MotorGroup({-4, 17});
+pros::Motor intake = pros::Motor(1);
 
 // pneumatics
 pros::adi::Pneumatics mogo = pros::adi::Pneumatics('a', false);
@@ -91,8 +93,9 @@ pros::adi::Pneumatics intake_lift = pros::adi::Pneumatics('c', false);
 pros::Controller controller = pros::Controller(pros::E_CONTROLLER_MASTER);
 
 // sensors
-pros::Rotation rot = pros::Rotation(18);
+pros::Rotation rot = pros::Rotation(10);
 pros::Distance mogod = pros::Distance(3);
 pros::Distance intakeD = pros::Distance(14);
+pros::Optical intakeC = pros::Optical(20);
 
 

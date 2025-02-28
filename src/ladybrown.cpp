@@ -5,7 +5,7 @@ void LadyBrown::initialize() {
     update_task = std::make_unique<pros::Task>([this](){
         while(true) {
             update();
-            pros::delay(10);
+            pros::delay(20);
         }
     });
     lb_pid.set_prev(0);
@@ -20,14 +20,15 @@ void LadyBrown::update() {
     }
     if (on) {
         int reading = rot.get_position();
-        if (reading > 25000) {
+        if (reading > 26000) {
             reading = -(36000-reading);
         }
+        printf("Reading: %d", reading);
         float vol = lb_pid.cycle(target, reading);
-        // printf("Vol: %f\n", vol);
+        printf("Vol: %f\n", vol);
         float angle_rad = (11400.0f - reading)/100.0 * (M_PI / 180.0f);
-        printf("Angle rad: %f\n", angle_rad);
-        printf("FF: %f\n", ff_K * sin(angle_rad));
+        // printf("Angle rad: %f\n", angle_rad);
+        // printf("FF: %f\n", ff_K * sin(angle_rad));
         lady_brown.move_voltage(vol + ff_K * sin(angle_rad));
     }
 }

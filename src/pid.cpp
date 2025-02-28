@@ -19,7 +19,7 @@ float PID::cycle(float reference, float reading) {
 
     vol = kp * error + err_sum * ki + delta * kd;
     vol = std::clamp(vol, -12000.0f, 12000.0f);
-    printf("E: %f\n", error);
+    // printf("E: %f\n", error);
     return vol;
 }
 

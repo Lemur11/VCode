@@ -79,11 +79,11 @@ void opcontrol(void);
 
 #include "lemlib/api.hpp"
 #include "robodash/api.h"
+#include "intake.h"
 
 enum lady_brown_state_enum {
     NORMAL,
-    FIRST,
-    MANUAL,
+    SCORE,
     RESET
 };
 
@@ -91,6 +91,9 @@ enum move_units {
     DEGREES=1,
     TILES=1000
 };
+
+extern color_enum color;
+extern std::atomic<bool> antiJam;
 
 #define TILES 1000
 #define DEGREES 1
