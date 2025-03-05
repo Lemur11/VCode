@@ -79,7 +79,7 @@ lemlib::Chassis chassis(drivetrain, lateral_PID, angular_PID,
                         sensors, &throttleCurve, &steerCurve);
 
 // lb
-pros::Motor lady_brown = pros::Motor(20);
+pros::Motor lady_brown = pros::Motor(-20);
 
 // intake
 pros::Motor intake = pros::Motor(1);
@@ -93,7 +93,7 @@ pros::adi::Pneumatics intake_lift = pros::adi::Pneumatics('c', false);
 pros::Controller controller = pros::Controller(pros::E_CONTROLLER_MASTER);
 
 // sensors
-pros::Rotation rot = pros::Rotation(10);
+pros::Rotation rot = pros::Rotation(-10);
 pros::Distance mogod = pros::Distance(3);
 pros::Distance intakeD = pros::Distance(14);
 pros::Optical intakeC = pros::Optical(20);

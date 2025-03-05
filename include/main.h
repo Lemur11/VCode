@@ -92,7 +92,7 @@ enum move_units {
     TILES=1000
 };
 
-extern color_enum color;
+// extern color_enum color;
 extern std::atomic<bool> antiJam;
 
 #define TILES 1000

@@ -22,7 +22,7 @@ std::vector<pros::controller_digital_e_t> buttons{DIGITAL_A, DIGITAL_B, DIGITAL_
 
 // init lady brown class and state var
 lady_brown_state_enum lady_brown_state = lady_brown_state_enum::NORMAL;
-color_enum color = color_enum::NONE;
+// color_enum color = color_enum::NONE;
 
 rd::Selector selector({
     // {"Test", test},
@@ -42,6 +42,120 @@ void vibrator() {
 	}
 }
 
+
+void hang() {
+	lb.move(12000);
+	while (!controller.get_digital(DIGITAL_LEFT)) {
+		pros::delay(20);
+	}
+	left_motors.move_voltage(-12000);
+	right_motors.move_voltage(-12000);
+	pros::delay(500);
+	while (!controller.get_digital(DIGITAL_LEFT)) {
+		pros::delay(20);
+	}
+	left_motors.move_voltage(0);
+	right_motors.move_voltage(0);
+	lb.move(9800);
+	pros::delay(300);
+	left_motors.tare_position();
+	right_motors.tare_position();
+	lb.move(9300);
+	pros::delay(500);
+	left_motors.move_voltage(12000);
+	right_motors.move_voltage(12000);
+	while (left_motors.get_position() < 1568) {
+		pros::delay(20);
+	}
+	printf("Stopped\n");
+	left_motors.move_voltage(0);
+	right_motors.move_voltage(0);
+	lb.move(9800);
+	pros::delay(300);
+	left_motors.move_voltage(12000);
+	right_motors.move_voltage(12000);
+	while (left_motors.get_position() < (1568+1500)) {
+		pros::delay(20);
+	}
+	lb.move(4900);
+	left_motors.move_voltage(0);
+	right_motors.move_voltage(0);
+	while (!controller.get_digital(DIGITAL_LEFT)) {
+		pros::delay(20);
+	}
+	printf("Restarted\n");
+	printf("LEFTTTTTT: %f\n", left_motors.get_position());
+	left_motors.move_voltage(12000);
+	right_motors.move_voltage(12000);
+	while (left_motors.get_position() < 5900) { // 6308
+		printf("LEFTTTTTT: %f\n", left_motors.get_position());
+		pros::delay(20);
+	}
+	left_motors.move_voltage(0);
+	right_motors.move_voltage(0);
+	pros::delay(500);
+	///repeat
+	lb.move(14000);
+	pros::delay(500);
+	while (!controller.get_digital(DIGITAL_LEFT)) {
+		pros::delay(20);
+	}
+	left_motors.move_voltage(-12000);
+	right_motors.move_voltage(-12000);
+	pros::delay(500);
+	while (!controller.get_digital(DIGITAL_LEFT)) {
+		pros::delay(20);
+	}
+	left_motors.move_voltage(0);
+	right_motors.move_voltage(0);
+	lb.move(9800);
+	pros::delay(300);
+	left_motors.tare_position();
+	right_motors.tare_position();
+	lb.move(9300);
+	pros::delay(500);
+	left_motors.move_voltage(12000);
+	right_motors.move_voltage(12000);
+	while (left_motors.get_position() < 1568) {
+		pros::delay(20);
+	}
+	printf("Stopped\n");
+	left_motors.move_voltage(0);
+	right_motors.move_voltage(0);
+	lb.move(9800);
+	pros::delay(300);
+	left_motors.move_voltage(12000);
+	right_motors.move_voltage(12000);
+	while (left_motors.get_position() < (1568+1500)) {
+		pros::delay(20);
+	}
+	lb.move(4900);
+	left_motors.move_voltage(0);
+	right_motors.move_voltage(0);
+	while (!controller.get_digital(DIGITAL_LEFT)) {
+		pros::delay(20);
+	}
+	printf("Restarted\n");
+	printf("LEFTTTTTT: %f\n", left_motors.get_position());
+	left_motors.move_voltage(12000);
+	right_motors.move_voltage(12000);
+	while (left_motors.get_position() < 5900) { // 6308
+		printf("LEFTTTTTT: %f\n", left_motors.get_position());
+		pros::delay(20);
+	}
+	left_motors.move_voltage(0);
+	right_motors.move_voltage(0);
+	lb.move(14000);
+	pros::delay(500);
+	while (!controller.get_digital(DIGITAL_LEFT)) {
+		pros::delay(20);
+	}
+	left_motors.move_voltage(-12000);
+	right_motors.move_voltage(-12000);
+	while (1) {};
+}
+
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -58,9 +172,11 @@ void initialize() {
 	rot.set_data_rate(5);
 	rot.reset();
 	rot.reset_position();
-	rot.set_position(-1000);
+	rot.set_position(1000);
 
 	intake.set_gearing(pros::MotorGears::rpm_600);
+
+	left_motors.set_encoder_units_all(pros::motor_encoder_units_e_t::E_MOTOR_ENCODER_DEGREES);
 
 	lb.initialize();
 	lb.off();
@@ -84,28 +200,28 @@ void initialize() {
 		}
 	});
 
-	pros::Task([&]() {
-		intakeC.set_led_pwm(100);
-		while (true) {
-			if (intakeD.get() < 70) {
-				sorting = true;
-				if (color == RED && intakeC.get_hue() < 40) {
-					pros::delay(200);
-					intake.move_velocity(-600);
-					pros::delay(400);
-					intake.move_velocity(600);
-				}
-				else if (color == BLUE && intakeC.get_hue() > 120) {
-					pros::delay(200);
-					intake.move_velocity(-600);
-					pros::delay(400);
-					intake.move_velocity(600);
-				}
-			}
-			else {sorting = false;}
-			pros::delay(10);
-		}
-	});
+	// pros::Task([&]() {
+	// 	intakeC.set_led_pwm(100);
+	// 	while (true) {
+	// 		if (intakeD.get() < 70) {
+	// 			sorting = true;
+	// 			if (color == RED && intakeC.get_hue() < 40) {
+	// 				pros::delay(200);
+	// 				intake.move_velocity(-600);
+	// 				pros::delay(400);
+	// 				intake.move_velocity(600);
+	// 			}
+	// 			else if (color == BLUE && intakeC.get_hue() > 120) {
+	// 				pros::delay(200);
+	// 				intake.move_velocity(-600);
+	// 				pros::delay(400);
+	// 				intake.move_velocity(600);
+	// 			}
+	// 		}
+	// 		else {sorting = false;}
+	// 		pros::delay(10);
+	// 	}
+	// });
 
 	pros::Task screenTask([&]() {
         while (true) {
@@ -189,10 +305,13 @@ void opcontrol() {
 
 	console.focus();
 	
+	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+	// hang();
 
 	// printf("OPCONTROL\n");
 	while (true) {
-		printf("In: %f\n", intake.get_position());
+		// printf("In: %f\n", intake.get_position());
 
 		// Arcade control scheme with deadzones
 		int dir = joystick(controller.get_analog(ANALOG_LEFT_Y));    // Gets amount forward/backward from left joystick
@@ -230,6 +349,12 @@ void opcontrol() {
 		if (controller.get_digital(DIGITAL_X)) {
 			lady_brown_state = NORMAL;
 			lb.off();
+			lady_brown.move_voltage(-12000);
+			xIng = true;
+		}
+		else if (controller.get_digital(DIGITAL_B)) {
+			lady_brown_state = NORMAL;
+			lb.off();
 			lady_brown.move_voltage(12000);
 			xIng = true;
 		}
@@ -237,11 +362,10 @@ void opcontrol() {
 			lady_brown.move_voltage(0);
 			xIng = false;
 		}
-
 		switch(lady_brown_state) {
 			case NORMAL:
 			{
-				if (rot.get_position() > -1500) {
+				if (rot.get_position() > 1500) {
 					lb.off();
 					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 				}
@@ -252,7 +376,7 @@ void opcontrol() {
 					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 					lady_brown_state = SCORE;
 					// lb.on();
-					lb.move(-4900);
+					lb.move(4900);
 				}
 				break;
 			}
@@ -270,7 +394,7 @@ void opcontrol() {
 				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 					lady_brown_state = RESET;
-					lb.move(-10800);
+					lb.move(11600);
 					// lb.move(350);
 				}
 				break;
@@ -293,7 +417,9 @@ void opcontrol() {
 
 			}
 
-			pros::delay(20);                               // Run for 20 ms then update
 		}
+		pros::delay(20);                               // Run for 20 ms then update
+
+
 	}
 }

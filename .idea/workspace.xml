@@ -26,7 +26,14 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ef50ce89-a4d0-46ec-aa11-9f15179b5401" name="Changes" comment="" />
+    <list default="true" id="ef50ce89-a4d0-46ec-aa11-9f15179b5401" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/editor.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/editor.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/intake.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/intake.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/main.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/main.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/intake.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/intake.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -89,6 +96,9 @@
       </map>
     </option>
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
   <component name="ProjectApplicationVersion">
     <option name="ide" value="CLion" />
     <option name="majorVersion" value="2024" />
@@ -112,12 +122,14 @@
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "states",
     "last_opened_file_path": "/Users/simon/Simon/Vex Robotics/movement_test/movement_test",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "run.code.analysis.last.selected.profile": "pProject Default",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -187,6 +199,8 @@
       <workItem from="1738700808865" duration="15597000" />
       <workItem from="1739193937409" duration="50736000" />
       <workItem from="1740695629694" duration="15620000" />
+      <workItem from="1740775627146" duration="6111000" />
+      <workItem from="1740861686371" duration="12244000" />
     </task>
     <task id="LOCAL-00001" summary="old stuff">
       <option name="closed" value="true" />

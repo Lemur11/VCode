@@ -29,10 +29,6 @@ class Intake {
   public:
     Intake(double length, double topPos, double sensorPos);
     void setSort(color_enum color);
-
-
-
-
 };
 
 #endif //INTAKE_H
