@@ -56,24 +56,22 @@ void hang() {
 	}
 	left_motors.move_voltage(0);
 	right_motors.move_voltage(0);
-	lb.move(9800);
-	pros::delay(300);
 	left_motors.tare_position();
 	right_motors.tare_position();
-	lb.move(9300);
+	lb.move(9800);
 	pros::delay(500);
 	left_motors.move_voltage(12000);
 	right_motors.move_voltage(12000);
-	while (left_motors.get_position() < 1568) {
-		pros::delay(20);
-	}
-	printf("Stopped\n");
-	left_motors.move_voltage(0);
-	right_motors.move_voltage(0);
-	lb.move(9800);
-	pros::delay(300);
-	left_motors.move_voltage(12000);
-	right_motors.move_voltage(12000);
+	// while (left_motors.get_position() < 1568) {
+	// 	pros::delay(20);
+	// }
+	// printf("Stopped\n");
+	// left_motors.move_voltage(0);
+	// right_motors.move_voltage(0);
+	// lb.move(9800);
+	// pros::delay(300);
+	// left_motors.move_voltage(12000);
+	// right_motors.move_voltage(12000);
 	while (left_motors.get_position() < (1568+1500)) {
 		pros::delay(20);
 	}
@@ -305,7 +303,7 @@ void opcontrol() {
 
 	console.focus();
 	
-	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	// lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
 	// hang();
 
@@ -365,7 +363,7 @@ void opcontrol() {
 		switch(lady_brown_state) {
 			case NORMAL:
 			{
-				if (rot.get_position() > 1500) {
+				if (rot.get_position() < 1500) {
 					lb.off();
 					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 				}
