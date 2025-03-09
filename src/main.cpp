@@ -44,6 +44,7 @@ void vibrator() {
 
 
 void hang() {
+	left_motors.set_encoder_units_all(pros::motor_encoder_units_e_t::E_MOTOR_ENCODER_DEGREES);
 	lb.move(12000);
 	while (!controller.get_digital(DIGITAL_LEFT)) {
 		pros::delay(20);
@@ -161,21 +162,19 @@ void hang() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
+	// lemlib stuff
 	chassis.calibrate();
-	chassis.setPose(0, 0, 360-120);
+	chassis.setPose(0, 0, 0);
 
+	// intake stuff
 	intake.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+	intake.set_gearing(pros::MotorGears::rpm_600);
 
-
+	// lb stuff
 	rot.set_data_rate(5);
 	rot.reset();
 	rot.reset_position();
 	rot.set_position(1000);
-
-	intake.set_gearing(pros::MotorGears::rpm_600);
-
-	left_motors.set_encoder_units_all(pros::motor_encoder_units_e_t::E_MOTOR_ENCODER_DEGREES);
-
 	lb.initialize();
 	lb.off();
 
@@ -197,29 +196,6 @@ void initialize() {
 			pros::delay(20);
 		}
 	});
-
-	// pros::Task([&]() {
-	// 	intakeC.set_led_pwm(100);
-	// 	while (true) {
-	// 		if (intakeD.get() < 70) {
-	// 			sorting = true;
-	// 			if (color == RED && intakeC.get_hue() < 40) {
-	// 				pros::delay(200);
-	// 				intake.move_velocity(-600);
-	// 				pros::delay(400);
-	// 				intake.move_velocity(600);
-	// 			}
-	// 			else if (color == BLUE && intakeC.get_hue() > 120) {
-	// 				pros::delay(200);
-	// 				intake.move_velocity(-600);
-	// 				pros::delay(400);
-	// 				intake.move_velocity(600);
-	// 			}
-	// 		}
-	// 		else {sorting = false;}
-	// 		pros::delay(10);
-	// 	}
-	// });
 
 	pros::Task screenTask([&]() {
         while (true) {
@@ -268,9 +244,8 @@ void competition_initialize() {}
  */
 void autonomous() {
 	console.focus();
+	skills();
 	// skills();
-	// lb.move(16000, true);
-	lb.move(4100, true);
 	// selector.run_auton();
 }
 
@@ -374,7 +349,7 @@ void opcontrol() {
 					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 					lady_brown_state = SCORE;
 					// lb.on();
-					lb.move(4900);
+					lb.move(6300);
 				}
 				break;
 			}
@@ -392,7 +367,7 @@ void opcontrol() {
 				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 					lady_brown_state = RESET;
-					lb.move(11600);
+					lb.move(16000);
 					// lb.move(350);
 				}
 				break;
