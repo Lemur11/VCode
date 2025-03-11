@@ -4,25 +4,25 @@
 #include "pros/motor_group.hpp"
 
 // left motor group
-pros::MotorGroup left_motors({11, 9, -14}, pros::MotorGears::blue);
+pros::MotorGroup left_motors({-6, 2, -4}, pros::MotorGears::blue);
 // right motor group
-pros::MotorGroup right_motors({17, -15, -12}, pros::MotorGears::blue);
+pros::MotorGroup right_motors({8, -3, 7}, pros::MotorGears::blue);
 
 // drivetrain settings
 lemlib::Drivetrain drivetrain(&left_motors, // left motor group
                               &right_motors, // right motor group
                               11, // 12 inch track width
-                              lemlib::Omniwheel::NEW_325, // using new 3.25" omnis
-                              450, // drivetrain rpm is 450
+                              lemlib::Omniwheel::NEW_275, // using new 3.25" omnis
+                              600, // drivetrain rpm is 450
                               2 // horizontal drift is 2 (for now)
 );
 
 
 
 //imu
-pros::Imu imu = pros::Imu(16);
+pros::Imu imu = pros::Imu(20);
 // horizontal tracking wheel encoder
-pros::Rotation horizontal_encoder(2);
+pros::Rotation horizontal_encoder(5);
 // horizontal tracking wheel
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_325, -1); //6.7676
 // vertical tracking wheel encoder
@@ -39,13 +39,13 @@ lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1, set to null
 );
 
 // lateral PID controller
-lemlib::ControllerSettings lateral_PID(10, // proportional gain (kP)
-                                              0, // integral gain (kI)
+lemlib::ControllerSettings lateral_PID(8, // proportional gain (kP)
+                                              0.5, // integral gain (kI)
                                               3, // derivative gain (kD)
-                                              3, // anti windup
+                                              1, // anti windup
                                               0.25, // small error range, in inches
                                               100, // small error range timeout, in milliseconds
-                                              3, // large error range, in inches
+                                              1, // large error range, in inches
                                               1000, // large error range timeout, in milliseconds
                                               10 // maximum acceleration (slew)
 );
@@ -61,7 +61,6 @@ lemlib::ControllerSettings angular_PID(2, // proportional gain (kP)
                                               500, // large error range timeout, in milliseconds
                                               0 // maximum acceleration (slew)
 );
-
 // input curve for throttle input during driver control
 lemlib::ExpoDriveCurve throttleCurve(3, // joystick deadband out of 127
                                      10, // minimum output where drivetrain will move out of 127
@@ -79,10 +78,10 @@ lemlib::Chassis chassis(drivetrain, lateral_PID, angular_PID,
                         sensors, &throttleCurve, &steerCurve);
 
 // lb
-pros::Motor lady_brown = pros::Motor(-4);
+pros::Motor lady_brown = pros::Motor(21);
 
 // intake
-pros::Motor intake = pros::Motor(1);
+pros::Motor intake = pros::Motor(-1);
 
 // pneumatics
 pros::adi::Pneumatics mogo = pros::adi::Pneumatics('b', false);

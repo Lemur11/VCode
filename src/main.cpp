@@ -43,118 +43,6 @@ void vibrator() {
 }
 
 
-void hang() {
-	left_motors.set_encoder_units_all(pros::motor_encoder_units_e_t::E_MOTOR_ENCODER_DEGREES);
-	lb.move(12000);
-	while (!controller.get_digital(DIGITAL_LEFT)) {
-		pros::delay(20);
-	}
-	left_motors.move_voltage(-12000);
-	right_motors.move_voltage(-12000);
-	pros::delay(500);
-	while (!controller.get_digital(DIGITAL_LEFT)) {
-		pros::delay(20);
-	}
-	left_motors.move_voltage(0);
-	right_motors.move_voltage(0);
-	left_motors.tare_position();
-	right_motors.tare_position();
-	lb.move(9800);
-	pros::delay(500);
-	left_motors.move_voltage(12000);
-	right_motors.move_voltage(12000);
-	// while (left_motors.get_position() < 1568) {
-	// 	pros::delay(20);
-	// }
-	// printf("Stopped\n");
-	// left_motors.move_voltage(0);
-	// right_motors.move_voltage(0);
-	// lb.move(9800);
-	// pros::delay(300);
-	// left_motors.move_voltage(12000);
-	// right_motors.move_voltage(12000);
-	while (left_motors.get_position() < (1568+1500)) {
-		pros::delay(20);
-	}
-	lb.move(4900);
-	left_motors.move_voltage(0);
-	right_motors.move_voltage(0);
-	while (!controller.get_digital(DIGITAL_LEFT)) {
-		pros::delay(20);
-	}
-	printf("Restarted\n");
-	printf("LEFTTTTTT: %f\n", left_motors.get_position());
-	left_motors.move_voltage(12000);
-	right_motors.move_voltage(12000);
-	while (left_motors.get_position() < 5900) { // 6308
-		printf("LEFTTTTTT: %f\n", left_motors.get_position());
-		pros::delay(20);
-	}
-	left_motors.move_voltage(0);
-	right_motors.move_voltage(0);
-	pros::delay(500);
-	///repeat
-	lb.move(14000);
-	pros::delay(500);
-	while (!controller.get_digital(DIGITAL_LEFT)) {
-		pros::delay(20);
-	}
-	left_motors.move_voltage(-12000);
-	right_motors.move_voltage(-12000);
-	pros::delay(500);
-	while (!controller.get_digital(DIGITAL_LEFT)) {
-		pros::delay(20);
-	}
-	left_motors.move_voltage(0);
-	right_motors.move_voltage(0);
-	lb.move(9800);
-	pros::delay(300);
-	left_motors.tare_position();
-	right_motors.tare_position();
-	lb.move(9300);
-	pros::delay(500);
-	left_motors.move_voltage(12000);
-	right_motors.move_voltage(12000);
-	while (left_motors.get_position() < 1568) {
-		pros::delay(20);
-	}
-	printf("Stopped\n");
-	left_motors.move_voltage(0);
-	right_motors.move_voltage(0);
-	lb.move(9800);
-	pros::delay(300);
-	left_motors.move_voltage(12000);
-	right_motors.move_voltage(12000);
-	while (left_motors.get_position() < (1568+1500)) {
-		pros::delay(20);
-	}
-	lb.move(4900);
-	left_motors.move_voltage(0);
-	right_motors.move_voltage(0);
-	while (!controller.get_digital(DIGITAL_LEFT)) {
-		pros::delay(20);
-	}
-	printf("Restarted\n");
-	printf("LEFTTTTTT: %f\n", left_motors.get_position());
-	left_motors.move_voltage(12000);
-	right_motors.move_voltage(12000);
-	while (left_motors.get_position() < 5900) { // 6308
-		printf("LEFTTTTTT: %f\n", left_motors.get_position());
-		pros::delay(20);
-	}
-	left_motors.move_voltage(0);
-	right_motors.move_voltage(0);
-	lb.move(14000);
-	pros::delay(500);
-	while (!controller.get_digital(DIGITAL_LEFT)) {
-		pros::delay(20);
-	}
-	left_motors.move_voltage(-12000);
-	right_motors.move_voltage(-12000);
-	while (1) {};
-}
-
-
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -277,10 +165,6 @@ void opcontrol() {
 	pros::Task vib(vibrator);
 
 	console.focus();
-	
-	// lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-
-	// hang();
 
 	// printf("OPCONTROL\n");
 	while (true) {
@@ -309,6 +193,10 @@ void opcontrol() {
 			doinker.toggle();
 		}
 
+		if (controller.get_digital_new_press(DIGITAL_B)) {
+			descore.toggle();
+		}
+
 		if (controller.get_digital(DIGITAL_R1)) {
 			intake.move_velocity(intake_vel);
 		}
@@ -319,80 +207,61 @@ void opcontrol() {
 			intake.move_velocity(0);
 		}
 
-		if (controller.get_digital(DIGITAL_X)) {
-			lady_brown_state = NORMAL;
-			lb.off();
-			lady_brown.move_voltage(-12000);
-			xIng = true;
-		}
-		else if (controller.get_digital(DIGITAL_B)) {
-			lady_brown_state = NORMAL;
-			lb.off();
-			lady_brown.move_voltage(12000);
-			xIng = true;
-		}
-		else if (xIng == true) {
-			lady_brown.move_voltage(0);
-			xIng = false;
-		}
-		switch(lady_brown_state) {
-			case NORMAL:
-			{
-				if (rot.get_position() < 1500) {
-					lb.off();
-					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-				}
-				// lb.off();
-				// printf("Normal\n");
-				// printf("Power %f\n", lady_brown.get_power());
-				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+		if (1) {
+			switch(lady_brown_state) {
+				case NORMAL:
+				{
+					if (lady_brown.get_position() < 10) {
+						lb.off();
+					}
+					// lb.off();
+					printf("Normal\n");
+					// printf("Power %f\n", lady_brown.get_power());
 					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-					lady_brown_state = SCORE;
-					// lb.on();
-					lb.move(6300);
+					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+						lady_brown_state = SCORE;
+						// lb.on();
+						lb.move(210);
+					}
+					break;
 				}
-				break;
-			}
-			// case FIRST:
-			// {
-			// 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-			// 	if (controller.get_digital_new_press(DIGITAL_L1)) {
-			// 		lady_brown_state = RESET;
-			// 		lb.move(-37);
-			// 	}
-			// 	break;
-			// }
-			case SCORE:
-			{
-				lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-					lady_brown_state = RESET;
-					lb.move(16000);
-					// lb.move(350);
-				}
-				break;
-			}
-			case RESET:
-			{
-				if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-					lady_brown_state = NORMAL;
-					lb.move(0);
-				}
-				// if (lb.done()) {
-				// 	printf("EXIT\n");
-				// 	lb.off();
-				// 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-				// 	printf("Coasting\n");
-				// 	lady_brown_state = NORMAL;
-				// 	lb.move(-37);
+				// case FIRST:
+				// {
+				// 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+				// 	if (controller.get_digital_new_press(DIGITAL_L1)) {
+				// 		lady_brown_state = RESET;
+				// 		lb.move(-37);
+				// 	}
+				// 	break;
 				// }
-				break;
-
+				case SCORE:
+				{
+					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+						lady_brown_state = RESET;
+						lb.move(800);
+						// lb.move(350);
+					}
+					break;
+				}
+				case RESET:
+				{
+					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+						lady_brown_state = NORMAL;
+						lb.move(0);
+					}
+					// if (lb.done()) {
+					// 	printf("EXIT\n");
+					// 	lb.off();
+					// 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+					// 	printf("Coasting\n");
+					// 	lady_brown_state = NORMAL;
+					// 	lb.move(-37);
+					// }
+					break;
+				}
 			}
-
-		}
 		pros::delay(20);                               // Run for 20 ms then update
-
-
+		}
 	}
 }
