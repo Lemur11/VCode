@@ -7,12 +7,10 @@
 void skills() {
 	chassis.setPose(0, 0, 0);
 	
-	chassis.turnToHeading(180, 1000);
-
-	chassis.turnToHeading(359, 1000);
 
 	// chassis.angularPID.kD = 23.5; // For large turns
-	// chassis.moveToPoint(0, -10, 1000, {.forwards = false});
+	chassis.moveToPoint(0, -10, 1000, {.forwards = false});
+	chassis.turnToHeading(-90, 1000);
 	// chassis.turnToPoint(10, -10, 1000, {.forwards = false});
 	// // chassis.angularPID.kD = 10; // For small turns
 

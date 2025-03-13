@@ -50,15 +50,15 @@ lemlib::ControllerSettings lateral_PID(8, // proportional gain (kP)
                                               1000, // large error range timeout, in milliseconds
                                               10 // maximum acceleration (slew)
 );
-lemlib::ControllerSettings angular_PID(1.7, // proportional gain (kP)
+lemlib::ControllerSettings angular_PID(2.3, // proportional gain (kP)
                                               0, // integral gain (kI)
-                                              10, // derivative gain (kD)
+                                              20, // derivative gain (kD)
                                               3, // anti windup
                                               2, // small error range, in inches
-                                              100, // small error range timeout, in milliseconds
+                                              500, // small error range timeout, in milliseconds
                                               5, // large error range, in inches
-                                              500, // large error range timeout, in milliseconds
-                                              5 // maximum acceleration (slew)
+                                              800, // large error range timeout, in milliseconds
+                                              10 // maximum acceleration (slew)
 );
 
 // // angular PID controller
@@ -92,10 +92,10 @@ lemlib::Chassis chassis(drivetrain, lateral_PID, angular_PID,
 pros::Motor lady_brown = pros::Motor(21);
 
 // intake
-pros::Motor intake = pros::Motor(-1);
+pros::Motor intake = pros::Motor(-5);
 
 // pneumatics
-pros::adi::Pneumatics mogo = pros::adi::Pneumatics('b', false);
+pros::adi::Pneumatics mogo = pros::adi::Pneumatics('g', false);
 pros::adi::Pneumatics descore = pros::adi::Pneumatics('a', false);
 pros::adi::Pneumatics doinker = pros::adi::Pneumatics('d', false);
 pros::adi::Pneumatics intake_lift = pros::adi::Pneumatics('c', false);

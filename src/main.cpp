@@ -193,9 +193,9 @@ void opcontrol() {
 			doinker.toggle();
 		}
 
-		if (controller.get_digital_new_press(DIGITAL_B)) {
-			descore.toggle();
-		}
+		// if (controller.get_digital_new_press(DIGITAL_B)) {
+		// 	descore.toggle();
+		// }
 
 		if (controller.get_digital(DIGITAL_R1)) {
 			intake.move_velocity(intake_vel);
@@ -219,9 +219,9 @@ void opcontrol() {
 					// printf("Power %f\n", lady_brown.get_power());
 					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-						lady_brown_state = SCORE;
+						lady_brown_state = LOADING;
 						// lb.on();
-						lb.move(210);
+						lb.move(190);
 					}
 					break;
 				}
@@ -234,22 +234,52 @@ void opcontrol() {
 				// 	}
 				// 	break;
 				// }
-				case SCORE:
+				case LOADING:
 				{
 					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+
+					// Score
 					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-						lady_brown_state = RESET;
+						lady_brown_state = SCORED;
 						lb.move(800);
 						// lb.move(350);
 					}
-					break;
-				}
-				case RESET:
-				{
-					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+					
+					// Reset
+					if (controller.get_digital_new_press(DIGITAL_LEFT)) {
 						lady_brown_state = NORMAL;
 						lb.move(0);
 					}
+
+					// Second Loading
+					if (controller.get_digital_new_press(DIGITAL_DOWN)) {
+						lady_brown_state = SECOND;
+						lb.move(430);
+					}
+
+					break;
+				}
+				case SECOND:
+				{
+					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+						lady_brown_state = SCORED;
+						lb.move(800);
+					}
+
+					break;
+				}
+				case SCORED:
+				{
+					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+						lady_brown_state = LOADING;
+						lb.move(190);
+					}
+					
+					if (controller.get_digital_new_press(DIGITAL_LEFT)) {
+						lady_brown_state = NORMAL;
+						lb.move(0);
+					}
+
 					// if (lb.done()) {
 					// 	printf("EXIT\n");
 					// 	lb.off();

@@ -83,8 +83,9 @@ void opcontrol(void);
 
 enum lady_brown_state_enum {
     NORMAL,
-    SCORE,
-    RESET
+    LOADING,
+    SECOND,
+    SCORED
 };
 
 enum move_units {
