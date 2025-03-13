@@ -16,7 +16,6 @@ class LadyBrown {
         bool at_target = true;
         void update();
         std::unique_ptr<pros::Task> update_task;
-        PID lb_pid = PID(100.0, 0.0, 50.0, 45000.0);
         LadyBrown() = default;
 	    LadyBrown(const LadyBrown&) = delete;
 	    LadyBrown& operator=(const LadyBrown&) = delete;
@@ -24,7 +23,8 @@ class LadyBrown {
         inline static LadyBrown& getInstance() {
     		static LadyBrown INSTANCE;
 	    	return INSTANCE;
-	    }   
+	    }
+        PID lb_pid = PID(100.0, 0.0, 50.0, 45000.0);
         void initialize();
         void off();
         bool done();

@@ -25,7 +25,7 @@ pros::Imu imu = pros::Imu(20);
 // horizontal tracking wheel encoder
 pros::Rotation horizontal_encoder(5);
 // horizontal tracking wheel
-lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_325, -1); //6.7676
+lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -1); //6.7676
 // vertical tracking wheel encoder
 // TODO: NOT HERE YET
 // vertical tracking wheel
@@ -95,7 +95,7 @@ pros::Motor lady_brown = pros::Motor(21);
 pros::Motor intake = pros::Motor(-5);
 
 // pneumatics
-pros::adi::Pneumatics mogo = pros::adi::Pneumatics('g', false);
+pros::adi::Pneumatics mogo = pros::adi::Pneumatics('h', false);
 pros::adi::Pneumatics descore = pros::adi::Pneumatics('a', false);
 pros::adi::Pneumatics doinker = pros::adi::Pneumatics('d', false);
 pros::adi::Pneumatics intake_lift = pros::adi::Pneumatics('c', false);

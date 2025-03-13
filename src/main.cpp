@@ -59,10 +59,12 @@ void initialize() {
 	intake.set_gearing(pros::MotorGears::rpm_600);
 
 	// lb stuff
-	rot.set_data_rate(5);
-	rot.reset();
-	rot.reset_position();
-	rot.set_position(1000);
+	// rot.set_data_rate(5);
+	// rot.reset();
+	// rot.reset_position();
+	// rot.set_position(1000);
+	lady_brown.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+	lady_brown.tare_position();
 	lb.initialize();
 	lb.off();
 
@@ -221,7 +223,7 @@ void opcontrol() {
 					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 						lady_brown_state = LOADING;
 						// lb.on();
-						lb.move(190);
+						lb.move(94);
 					}
 					break;
 				}
@@ -241,7 +243,7 @@ void opcontrol() {
 					// Score
 					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 						lady_brown_state = SCORED;
-						lb.move(800);
+						lb.move(270);
 						// lb.move(350);
 					}
 					
@@ -254,7 +256,7 @@ void opcontrol() {
 					// Second Loading
 					if (controller.get_digital_new_press(DIGITAL_DOWN)) {
 						lady_brown_state = SECOND;
-						lb.move(430);
+						lb.move(190);
 					}
 
 					break;
@@ -263,7 +265,7 @@ void opcontrol() {
 				{
 					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 						lady_brown_state = SCORED;
-						lb.move(800);
+						lb.move(270);
 					}
 
 					break;
@@ -272,7 +274,7 @@ void opcontrol() {
 				{
 					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
 						lady_brown_state = LOADING;
-						lb.move(190);
+						lb.move(94);
 					}
 					
 					if (controller.get_digital_new_press(DIGITAL_LEFT)) {
