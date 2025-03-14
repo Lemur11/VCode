@@ -1,25 +1,35 @@
 #include "main.h"
+#include "atomic"
+#include "autons.h"
 #include "devices.h"
+#include "ladybrown.h"
 #include "pros/misc.h"
 #include "robodash/core.h"
 #include "robodash/views/console.hpp"
 #include "utils.h"
-#include "autons.h"
-#include "ladybrown.h"
-#include "atomic"
 #include <cstdio>
 
-std::vector<pros::controller_digital_e_t> buttons{DIGITAL_A, DIGITAL_B, DIGITAL_X, DIGITAL_Y, DIGITAL_LEFT,
-												DIGITAL_RIGHT, DIGITAL_R1, DIGITAL_R2, DIGITAL_L1, DIGITAL_L2};
+std::vector<pros::controller_digital_e_t> buttons{
+    DIGITAL_A,     DIGITAL_B,  DIGITAL_X,  DIGITAL_Y,  DIGITAL_LEFT,
+    DIGITAL_RIGHT, DIGITAL_R1, DIGITAL_R2, DIGITAL_L1, DIGITAL_L2};
 
-#define press(button) 	while (!controller.get_digital(button)) {pros::delay(20);}
-#define pressOnly(button) while (!controller.get_digital(button)) { \
-	for (auto but : buttons) { \
-		if (but == button) {continue;} \
-		else if (controller.get_digital(but)) {while (1){pros::delay(20);}} \
-	} \
-	pros::delay(20);}
-
+#define press(button)                                                          \
+  while (!controller.get_digital(button)) {                                    \
+    pros::delay(20);                                                           \
+  }
+#define pressOnly(button)                                                      \
+  while (!controller.get_digital(button)) {                                    \
+    for (auto but : buttons) {                                                 \
+      if (but == button) {                                                     \
+        continue;                                                              \
+      } else if (controller.get_digital(but)) {                                \
+        while (1) {                                                            \
+          pros::delay(20);                                                     \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+    pros::delay(20);                                                           \
+  }
 
 // init lady brown class and state var
 lady_brown_state_enum lady_brown_state = lady_brown_state_enum::NORMAL;
@@ -35,14 +45,13 @@ std::atomic<bool> sorting{false};
 std::atomic<bool> antiJam{false};
 
 void vibrator() {
-	while (0) {
-		if (!mogo.is_extended()) {
-			controller.rumble(".");
-		}
-		pros::delay(200);
-	}
+  while (0) {
+    if (!mogo.is_extended()) {
+      controller.rumble(".");
+    }
+    pros::delay(200);
+  }
 }
-
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -51,57 +60,56 @@ void vibrator() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	// lemlib stuff
-	chassis.calibrate();
-	chassis.setPose(0, 0, 0);
+  // lemlib stuff
+  chassis.calibrate();
+  chassis.setPose(0, 0, 0);
 
-	// intake stuff
-	intake.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
-	intake.set_gearing(pros::MotorGears::rpm_600);
+  // intake stuff
+  intake.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+  intake.set_gearing(pros::MotorGears::rpm_600);
 
-	// lb stuff
-	// rot.set_data_rate(5);
-	// rot.reset();
-	// rot.reset_position();
-	// rot.set_position(1000);
-	lady_brown.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
-	lady_brown.tare_position();
-	lb.initialize();
-	lb.off();
+  // lb stuff
+  // rot.set_data_rate(5);
+  // rot.reset();
+  // rot.reset_position();
+  // rot.set_position(1000);
+  lady_brown.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
+  lady_brown.tare_position();
+  lb.initialize();
+  lb.off();
 
-	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-	pros::Task([&]() {
-		int counter = 0;
-		while (true) {
-			if (antiJam && !sorting && intake.get_actual_velocity() < 10) {
-				if (counter > 100) {
-					intake.move_velocity(-600);
-					pros::delay(400);
-					intake.move_velocity(600);
-					pros::delay(100);
-					counter = 0;
-				}
-				else {counter++;}
-
-			}
-			pros::delay(20);
-		}
-	});
-
-	pros::Task screenTask([&]() {
-        while (true) {
-			console.clear();
-            // print robot location to the brain screen
-            console.printf( "X: %f\n", chassis.getPose().x); // x
-            console.printf( "Y: %f\n", chassis.getPose().y); // y
-            console.printf( "Theta: %f\n", chassis.getPose().theta); // heading
-            // log position telemetry
-            lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
-            // delay to save resources
-            pros::delay(50);
+  lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  pros::Task([&]() {
+    int counter = 0;
+    while (true) {
+      if (antiJam && !sorting && intake.get_actual_velocity() < 10) {
+        if (counter > 100) {
+          intake.move_velocity(-600);
+          pros::delay(400);
+          intake.move_velocity(600);
+          pros::delay(100);
+          counter = 0;
+        } else {
+          counter++;
         }
-    });
+      }
+      pros::delay(20);
+    }
+  });
 
+  pros::Task screenTask([&]() {
+    while (true) {
+      console.clear();
+      // print robot location to the brain screen
+      console.printf("X: %f\n", chassis.getPose().x);         // x
+      console.printf("Y: %f\n", chassis.getPose().y);         // y
+      console.printf("Theta: %f\n", chassis.getPose().theta); // heading
+      // log position telemetry
+      lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
+      // delay to save resources
+      pros::delay(50);
+    }
+  });
 }
 
 /**
@@ -134,13 +142,13 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	console.focus();
-	left_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	right_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-	skills();
+  console.focus();
+  left_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  right_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+  skills();
 
-	// skills();
-	// selector.run_auton();
+  // skills();
+  // selector.run_auton();
 }
 
 /**
@@ -157,147 +165,142 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	int intake_vel = 600;
+  int intake_vel = 600;
 
-	bool xIng = false;
+  bool xIng = false;
 
-	left_motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-	right_motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  left_motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+  right_motors.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
 
-	int cur_target;
-	int reading;
-	int lb_vol;
+  int cur_target;
+  int reading;
+  int lb_vol;
 
-	pros::Task vib(vibrator);
+  pros::Task vib(vibrator);
 
-	console.focus();
+  console.focus();
 
-	// printf("OPCONTROL\n");
-	while (true) {
-		// printf("In: %f\n", intake.get_position());
+  // printf("OPCONTROL\n");
+  while (true) {
+    // printf("In: %f\n", intake.get_position());
 
-		// Arcade control scheme with deadzones
-		int dir = joystick(controller.get_analog(ANALOG_LEFT_Y));    // Gets amount forward/backward from left joystick
-		int turn_p = joystick(controller.get_analog(ANALOG_RIGHT_X));  // Gets the turn left/right from right joystick
-		chassis.arcade(dir, turn_p);
+    // Arcade control scheme with deadzones
+    int dir = joystick(controller.get_analog(
+        ANALOG_LEFT_Y)); // Gets amount forward/backward from left joystick
+    int turn_p = joystick(controller.get_analog(
+        ANALOG_RIGHT_X)); // Gets the turn left/right from right joystick
+    chassis.arcade(dir, turn_p);
 
-		if (controller.get_digital_new_press(DIGITAL_X)) {
-			// printf("%f, %f, %f\n", chassis.getPose().x, chassis.getPose().y, chassis.getPose().theta);
-		}
+    if (controller.get_digital_new_press(DIGITAL_X)) {
+      // printf("%f, %f, %f\n", chassis.getPose().x, chassis.getPose().y,
+      // chassis.getPose().theta);
+    }
 
+    // button logic
+    // use toggle (on rising edge)
+    if (controller.get_digital_new_press(DIGITAL_L1)) {
+      mogo.extend();
+    } else if (controller.get_digital_new_press(DIGITAL_L2)) {
+      mogo.retract();
+    }
 
-		// button logic
-		// use toggle (on rising edge)
-		if (controller.get_digital_new_press(DIGITAL_L1)) {
-			mogo.extend();
-		}
-		else if (controller.get_digital_new_press(DIGITAL_L2)) {
-			mogo.retract();
-		}
-		
-		if (controller.get_digital_new_press(DIGITAL_Y)) {
-			doinker.toggle();
-		}
+    if (controller.get_digital_new_press(DIGITAL_Y)) {
+      doinker.toggle();
+    }
 
-		// if (controller.get_digital_new_press(DIGITAL_B)) {
-		// 	descore.toggle();
-		// }
+    // if (controller.get_digital_new_press(DIGITAL_B)) {
+    // 	descore.toggle();
+    // }
 
-		if (controller.get_digital(DIGITAL_R1)) {
-			intake.move_velocity(intake_vel);
-		}
-		else if (controller.get_digital(DIGITAL_R2)) {
-			intake.move_velocity(-intake_vel);
-		}
-		else {
-			intake.move_velocity(0);
-		}
+    if (controller.get_digital(DIGITAL_R1)) {
+      intake.move_velocity(intake_vel);
+    } else if (controller.get_digital(DIGITAL_R2)) {
+      intake.move_velocity(-intake_vel);
+    } else {
+      intake.move_velocity(0);
+    }
 
-		if (1) {
-			switch(lady_brown_state) {
-				case NORMAL:
-				{
-					if (lady_brown.get_position() < 10) {
-						lb.off();
-					}
-					// lb.off();
-					printf("Normal\n");
-					// printf("Power %f\n", lady_brown.get_power());
-					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-						lady_brown_state = LOADING;
-						// lb.on();
-						lb.move(94);
-					}
-					break;
-				}
-				// case FIRST:
-				// {
-				// 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-				// 	if (controller.get_digital_new_press(DIGITAL_L1)) {
-				// 		lady_brown_state = RESET;
-				// 		lb.move(-37);
-				// 	}
-				// 	break;
-				// }
-				case LOADING:
-				{
-					lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+    if (1) {
+      switch (lady_brown_state) {
+      case NORMAL: {
+        if (lady_brown.get_position() < 10) {
+          lb.off();
+        }
+        // lb.off();
+        printf("Normal\n");
+        // printf("Power %f\n", lady_brown.get_power());
+        lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+        if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+          lady_brown_state = LOADING;
+          // lb.on();
+          lb.move(84);
+        }
+        break;
+      }
+      // case FIRST:
+      // {
+      // 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+      // 	if (controller.get_digital_new_press(DIGITAL_L1)) {
+      // 		lady_brown_state = RESET;
+      // 		lb.move(-37);
+      // 	}
+      // 	break;
+      // }
+      case LOADING: {
+        lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 
-					// Score
-					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-						lady_brown_state = SCORED;
-						lb.move(270);
-						// lb.move(350);
-					}
-					
-					// Reset
-					if (controller.get_digital_new_press(DIGITAL_LEFT)) {
-						lady_brown_state = NORMAL;
-						lb.move(0);
-					}
+        // Score
+        if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+          lady_brown_state = SCORED;
+          lb.move(270);
+          // lb.move(350);
+        }
 
-					// Second Loading
-					if (controller.get_digital_new_press(DIGITAL_DOWN)) {
-						lady_brown_state = SECOND;
-						lb.move(190);
-					}
+        // Reset
+        if (controller.get_digital_new_press(DIGITAL_LEFT)) {
+          lady_brown_state = NORMAL;
+          lb.move(0);
+        }
 
-					break;
-				}
-				case SECOND:
-				{
-					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-						lady_brown_state = SCORED;
-						lb.move(270);
-					}
+        // Second Loading
+        if (controller.get_digital_new_press(DIGITAL_DOWN)) {
+          lady_brown_state = SECOND;
+          lb.move(190);
+        }
 
-					break;
-				}
-				case SCORED:
-				{
-					if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
-						lady_brown_state = LOADING;
-						lb.move(94);
-					}
-					
-					if (controller.get_digital_new_press(DIGITAL_LEFT)) {
-						lady_brown_state = NORMAL;
-						lb.move(0);
-					}
+        break;
+      }
+      case SECOND: {
+        if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+          lady_brown_state = SCORED;
+          lb.move(270);
+        }
 
-					// if (lb.done()) {
-					// 	printf("EXIT\n");
-					// 	lb.off();
-					// 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
-					// 	printf("Coasting\n");
-					// 	lady_brown_state = NORMAL;
-					// 	lb.move(-37);
-					// }
-					break;
-				}
-			}
-		pros::delay(20);                               // Run for 20 ms then update
-		}
-	}
+        break;
+      }
+      case SCORED: {
+        if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+          lady_brown_state = LOADING;
+          lb.move(84);
+        }
+
+        if (controller.get_digital_new_press(DIGITAL_LEFT)) {
+          lady_brown_state = NORMAL;
+          lb.move(0);
+        }
+
+        // if (lb.done()) {
+        // 	printf("EXIT\n");
+        // 	lb.off();
+        // 	lady_brown.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
+        // 	printf("Coasting\n");
+        // 	lady_brown_state = NORMAL;
+        // 	lb.move(-37);
+        // }
+        break;
+      }
+      }
+      pros::delay(20); // Run for 20 ms then update
+    }
+  }
 }
