@@ -7,6 +7,7 @@
 #include "autons.h"
 #include "ladybrown.h"
 #include "atomic"
+#include <cstdio>
 
 std::vector<pros::controller_digital_e_t> buttons{DIGITAL_A, DIGITAL_B, DIGITAL_X, DIGITAL_Y, DIGITAL_LEFT,
 												DIGITAL_RIGHT, DIGITAL_R1, DIGITAL_R2, DIGITAL_L1, DIGITAL_L2};
@@ -134,7 +135,10 @@ void competition_initialize() {}
  */
 void autonomous() {
 	console.focus();
+	left_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+	right_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 	skills();
+
 	// skills();
 	// selector.run_auton();
 }

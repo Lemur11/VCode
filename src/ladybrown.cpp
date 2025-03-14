@@ -20,9 +20,9 @@ void LadyBrown::update() {
     }
     if (on) {
         double reading = lady_brown.get_position();
-        printf("reading: %f\n", reading);
+        // printf("reading: %f\n", reading);
         float vol = lb_pid.cycle(target, reading);
-        printf("Vol: %f\n", vol);
+        // printf("Vol: %f\n", vol);
         float angle_rad = (114.0f - reading) * (M_PI / 180.0f);
         // printf("Angle rad: %f\n", angle_rad);
         // printf("FF: %f\n", ff_K * sin(angle_rad));

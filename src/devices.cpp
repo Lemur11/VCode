@@ -23,7 +23,7 @@ lemlib::Drivetrain drivetrain(&left_motors, // left motor group
 //imu
 pros::Imu imu = pros::Imu(20);
 // horizontal tracking wheel encoder
-pros::Rotation horizontal_encoder(5);
+pros::Rotation horizontal_encoder(1);
 // horizontal tracking wheel
 lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omniwheel::NEW_2, -1); //6.7676
 // vertical tracking wheel encoder
@@ -34,7 +34,7 @@ lemlib::TrackingWheel horizontal_tracking_wheel(&horizontal_encoder, lemlib::Omn
 // odometry settings
 lemlib::OdomSensors sensors(nullptr, // vertical tracking wheel 1, set to null
                             nullptr, // vertical tracking wheel 2, set to nullptr as we are using IMEs
-                            nullptr, // &horizontal_tracking_wheel horizontal tracking wheel 1
+                            &horizontal_tracking_wheel, // &horizontal_tracking_wheel horizontal tracking wheel 1
                             nullptr, // horizontal tracking wheel 2, set to nullptr as we don't have a second one
                             &imu // inertial sensor
 );
@@ -107,7 +107,7 @@ pros::Controller controller = pros::Controller(pros::E_CONTROLLER_MASTER);
 pros::Rotation rot = pros::Rotation(-10);
 // pros::Rotation rot = NULL;
 // pros::Distance mogod = pros::Distance(3);
-pros::Distance intakeD = pros::Distance(3);
-pros::Optical intakeC = pros::Optical(20);
+pros::Distance intakeD = pros::Distance(16);
+pros::Optical intakeC = pros::Optical(10);
 
 

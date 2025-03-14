@@ -222,7 +222,9 @@ ifeq ($(IS_LIBRARY),1)
 ELF_DEPS+=$(filter-out $(call GETALLOBJ,$(EXCLUDE_SRC_FROM_LIB)), $(call GETALLOBJ,$(EXCLUDE_SRCDIRS)))
 LIBRARIES+=$(LIBAR)
 else
+EXCLUDE_SRC_FROM_LIB+=$(SRCDIR)/static/example.txt.o
 ELF_DEPS+=$(call GETALLOBJ,$(EXCLUDE_SRCDIRS))
+ELF_DEPS:=$(filter-out $(BINDIR)/static/example.txt.o, $(ELF_DEPS))
 endif
 
 $(MONOLITH_BIN): $(MONOLITH_ELF) $(BINDIR)
