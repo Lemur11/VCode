@@ -97,14 +97,14 @@ pros::Motor intake = pros::Motor(-5);
 // pneumatics
 pros::adi::Pneumatics mogo = pros::adi::Pneumatics('h', false);
 pros::adi::Pneumatics descore = pros::adi::Pneumatics('a', false);
-pros::adi::Pneumatics doinker = pros::adi::Pneumatics('d', false);
+pros::adi::Pneumatics doinker = pros::adi::Pneumatics('e', false);
 pros::adi::Pneumatics intake_lift = pros::adi::Pneumatics('c', false);
 
 // controller
 pros::Controller controller = pros::Controller(pros::E_CONTROLLER_MASTER);
 
 // sensors
-pros::Rotation rot = pros::Rotation(-10);
+// pros::Rotation rot = pros::Rotation(-10);
 // pros::Rotation rot = NULL;
 // pros::Distance mogod = pros::Distance(3);
 pros::Distance intakeD = pros::Distance(16);

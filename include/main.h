@@ -94,7 +94,8 @@ enum move_units {
 };
 
 // extern color_enum color;
-extern std::atomic<bool> antiJam;
+// extern std::atomic<bool> antiJam;
+extern bool antiJam;
 
 #define TILES 1000
 #define DEGREES 1

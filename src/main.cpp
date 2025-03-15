@@ -42,7 +42,8 @@ rd::Selector selector({
 rd::Console console;
 
 std::atomic<bool> sorting{false};
-std::atomic<bool> antiJam{false};
+// std::atomic<bool> antiJam{false};
+bool antiJam = false;
 
 void vibrator() {
   while (0) {
@@ -83,7 +84,7 @@ void initialize() {
     int counter = 0;
     while (true) {
       if (antiJam && !sorting && intake.get_actual_velocity() < 10) {
-        if (counter > 100) {
+        if (counter > 50) {
           intake.move_velocity(-600);
           pros::delay(400);
           intake.move_velocity(600);
@@ -145,8 +146,9 @@ void autonomous() {
   console.focus();
   left_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   right_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-  skills();
-
+//   skills();
+  redRight();
+	// redLeft();
   // skills();
   // selector.run_auton();
 }
@@ -233,7 +235,7 @@ void opcontrol() {
         if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
           lady_brown_state = LOADING;
           // lb.on();
-          lb.move(87);
+          lb.move(85);
         }
         break;
       }
@@ -257,7 +259,7 @@ void opcontrol() {
         }
 
         // Reset
-        if (controller.get_digital_new_press(DIGITAL_LEFT)) {
+        if (controller.get_digital_new_press(DIGITAL_B)) {
           lady_brown_state = NORMAL;
           lb.move(0);
         }
@@ -281,10 +283,10 @@ void opcontrol() {
       case SCORED: {
         if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
           lady_brown_state = LOADING;
-          lb.move(87);
+          lb.move(85);
         }
 
-        if (controller.get_digital_new_press(DIGITAL_LEFT)) {
+        if (controller.get_digital_new_press(DIGITAL_B)) {
           lady_brown_state = NORMAL;
           lb.move(0);
         }
