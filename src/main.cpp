@@ -70,10 +70,10 @@ void initialize() {
   intake.set_gearing(pros::MotorGears::rpm_600);
 
   // lb stuff
-  // rot.set_data_rate(5);
-  // rot.reset();
-  // rot.reset_position();
-  // rot.set_position(1000);
+  rot.set_data_rate(5);
+  rot.reset();
+  rot.reset_position();
+  rot.set_position(1000);
   lady_brown.set_encoder_units(pros::E_MOTOR_ENCODER_DEGREES);
   lady_brown.tare_position();
   lb.initialize();
@@ -105,7 +105,7 @@ void initialize() {
       console.printf("X: %f\n", chassis.getPose().x);         // x
       console.printf("Y: %f\n", chassis.getPose().y);         // y
       console.printf("Theta: %f\n", chassis.getPose().theta); // heading
-      console.printf("Lad: %f\n", lady_brown.get_position());
+      console.printf("Lad: %d\n", rot.get_position());
       console.printf("Lady Brown State: %d\n", lady_brown_state);
       // log position telemetry
       lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
@@ -149,8 +149,8 @@ void autonomous() {
   left_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
   right_motors.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
 //   skills();
-  redRight();
-	// redLeft();
+  // redRight();
+	redLeft();
   // skills();
   // selector.run_auton();
 }
@@ -190,7 +190,7 @@ void opcontrol() {
   }
   lady_brown.move_voltage(0);
   pros::delay(500);
-  lady_brown.tare_position();
+  rot.reset_position();
   
 
 
@@ -247,7 +247,7 @@ void opcontrol() {
         if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
           lady_brown_state = LOADING;
           // lb.on();
-          lb.move(85);
+          lb.move(3700);
         }
         break;
       }
@@ -266,13 +266,13 @@ void opcontrol() {
         // Score
         if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
           lady_brown_state = SCORED;
-          lb.move(310);
+          lb.move(15000);
           // lb.move(350);
         }
         
         if (controller.get_digital_new_press(DIGITAL_X)) {
           lady_brown_state = ALLIANCE;
-          lb.move(330);
+          lb.move(20000);
         }
 
         // Reset
@@ -284,7 +284,7 @@ void opcontrol() {
         // Second Loading
         if (controller.get_digital_new_press(DIGITAL_DOWN)) {
           lady_brown_state = SECOND;
-          lb.move(190);
+          lb.move(10000);
         }
 
         break;
@@ -292,7 +292,7 @@ void opcontrol() {
       case SECOND: {
         if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
           lady_brown_state = SCORED;
-          lb.move(310);
+          lb.move(15000);
         }
 
         break;
@@ -308,7 +308,7 @@ void opcontrol() {
       case SCORED: {
         if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
           lady_brown_state = LOADING;
-          lb.move(85);
+          lb.move(3550);
         }
 
         if (controller.get_digital_new_press(DIGITAL_B)) {

@@ -104,7 +104,7 @@ pros::adi::Pneumatics intake_lift = pros::adi::Pneumatics('c', false);
 pros::Controller controller = pros::Controller(pros::E_CONTROLLER_MASTER);
 
 // sensors
-// pros::Rotation rot = pros::Rotation(-10);
+pros::Rotation rot = pros::Rotation(11);
 // pros::Rotation rot = NULL;
 // pros::Distance mogod = pros::Distance(3);
 pros::Distance intakeD = pros::Distance(16);

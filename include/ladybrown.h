@@ -23,10 +23,11 @@ class LadyBrown {
         inline static LadyBrown& getInstance() {
     		static LadyBrown INSTANCE;
 	    	return INSTANCE;
-	    }
-        PID lb_pid = PID(800.0, 0.0, 0.0, 45000.0);
+	    }   
         void initialize();
         void off();
         bool done();
         void move(int cur_target, bool blocking=false);
+        PID lb_pid = PID(2.3, 0.0, 1.5, 45000.0);
+
 };

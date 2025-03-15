@@ -14,7 +14,7 @@ void skills() {
   antiJam = true;
   chassis.setPose(0, 0, 120);
   lb.lb_pid.set_consts(35.0, 0.0, 50.0);
-  lb.move(330);
+  lb.move(21000);
   pros::delay(700);
   lb.lb_pid.set_consts(100.0, 0.0, 50.0);
 
@@ -23,7 +23,7 @@ void skills() {
   chassis.waitUntilDone();
   mogo.extend();
   intake.move_velocity(12000);
-  lb.move(-30);
+  lb.move(-2000);
   pros::delay(300);
 
   // First ring
@@ -180,11 +180,10 @@ void skills() {
 void redRight() {
 	chassis.setPose(0, 0, 0);
   // pros::delay(2000);
-	lb.lb_pid.set_consts(35.0, 0.0, 50.0);
-	lb.move(330);
+	lb.lb_pid.set_consts(1.4, 0.0, 1.5);
+	lb.move(16000);
 	pros::delay(700);
-	lb.lb_pid.set_consts(100.0, 0.0, 50.0);
-
+  lb.lb_pid.set_consts(2.3, 0.0, 1.5);
 
 	// First Mogo
 	chassis.moveToPoint(0, -10, 1000, {.forwards = false});
@@ -192,6 +191,7 @@ void redRight() {
 	chassis.moveToPoint(11.9, -33.5, 1000, {.forwards = false, .maxSpeed = 80});
 	chassis.waitUntilDone();
 	mogo.extend();
+  lb.move(-2000);
 	pros::delay(300);
   intake.move_velocity(12000);
 
@@ -209,7 +209,7 @@ void redRight() {
   chassis.turnToPoint(11.9, -33.5, 1000);
 	chassis.moveToPoint(11.9, -33.5, 1000);
   chassis.waitUntilDone();
-  lb.move(270);
+  lb.move(12000);
 	
 	
 }
@@ -217,11 +217,9 @@ void redRight() {
 void redLeft(){
 	chassis.setPose(0, 0, 0);
   // pros::delay(2000);
-	lb.lb_pid.set_consts(35.0, 0.0, 50.0);
-	lb.move(330);
+  lb.lb_pid.set_consts(1.4, 0.0, 1.5);	lb.move(16000);
 	pros::delay(700);
-	lb.lb_pid.set_consts(100.0, 0.0, 50.0);
-
+  lb.lb_pid.set_consts(2.3, 0.0, 1.5);
 
 	// First Mogo
 	chassis.moveToPoint(0, -10, 1000, {.forwards = false});
@@ -229,44 +227,43 @@ void redLeft(){
 	chassis.moveToPoint(-11.9, -33.5, 1000, {.forwards = false, .maxSpeed = 80});
 	chassis.waitUntilDone();
 	mogo.extend();
-	pros::delay(300);
+  lb.move(-2000);
+	pros::delay(500);
   intake.move_velocity(12000);
-
-
-  lb.off();
-  lady_brown.move_voltage(-12000);
-  pros::delay(300);
-  while (lady_brown.get_actual_velocity() > 10) {
-    pros::delay(20);
-  }
-  lady_brown.move_voltage(0);
   pros::delay(300);
 
-	chassis.turnToPoint(4.25, -51, 1000);
-	chassis.moveToPoint(4.25, -51, 1000);
+	chassis.turnToPoint(9.9, -52, 1000);
+  chassis.moveToPoint(9.9, -52, 1000);
 
-	chassis.turnToPoint(43.25, -40, 1000);
+
+	chassis.turnToPoint(53.25, -15, 1000);
   antiJam = true;
-	chassis.moveToPoint(43.25, -40, 1000, {.maxSpeed = 60});
+	chassis.moveToPoint(53.25, -15, 1000, {.maxSpeed = 60});
 	chassis.waitUntilDone();
 	pros::delay(1000);
-	chassis.moveToPoint(47.64, -37.74, 	1000);
+	chassis.moveToPoint(50.5, -26.2, 	1000);
   pros::delay(3000);
-  chassis.turnToPoint(-11.9, -33.5, 1000);
-	chassis.moveToPoint(-11.9, -33.5, 1000);
-  chassis.waitUntilDone();
-  lb.move(270);
+  chassis.turnToPoint(28.4, -44.5, 1000);
+  chassis.moveToPoint(28.4, -44.5, 1000);
+  mogo.retract();
+  chassis.turnToPoint(13.2, -59.1, 1000, {.forwards=false});
+  chassis.moveToPoint(13.2, -59.1, 1000, {.forwards=false});
+
+  // chassis.turnToPoint(-11.9, -33.5, 1000);
+	// chassis.moveToPoint(-11.9, -33.5, 1000);
+  // chassis.waitUntilDone();
+  // lb.move(12000);
 
 	
 }
 
 
 void redNeg() {
+  /// ALSO BLUE POS!!
   chassis.setPose(0, 0, 0);
-	lb.lb_pid.set_consts(35.0, 0.0, 50.0);
-	lb.move(330);
+  lb.lb_pid.set_consts(1.4, 0.0, 1.5);	lb.move(16000);
 	pros::delay(700);
-	lb.lb_pid.set_consts(100.0, 0.0, 50.0);
+	lb.lb_pid.set_consts(2.3, 0.0, 1.5);
 
 
 	// First Mogo
@@ -276,8 +273,7 @@ void redNeg() {
 	chassis.waitUntilDone();
 	mogo.extend();
 	pros::delay(400);
-  lb.move(-30);
-
+  lb.move(-2000);
   chassis.turnToPoint(-10.3, -54.85, 1000);
   intake.move_velocity(12000);
 
@@ -294,16 +290,14 @@ void redNeg() {
   chassis.turnToPoint(-11.8, -40.1, 1000);
   chassis.moveToPoint(-11.8, -40.1, 1000);
   chassis.waitUntilDone();
-  lb.move(270);
+  lb.move(12000);
 }
 
 void blueNeg() {
   chassis.setPose(0, 0, 0);
-	lb.lb_pid.set_consts(35.0, 0.0, 50.0);
-	lb.move(330);
+  lb.lb_pid.set_consts(1.4, 0.0, 1.5);	lb.move(16000);
 	pros::delay(700);
-	lb.lb_pid.set_consts(100.0, 0.0, 50.0);
-
+  lb.lb_pid.set_consts(2.3, 0.0, 1.5);
 
 	// First Mogo
 	chassis.moveToPoint(0, -10, 1000, {.forwards = false});
@@ -313,8 +307,7 @@ void blueNeg() {
 	mogo.extend();
 	pros::delay(700);
 
-  lb.move(-30);
-
+  lb.move(-2000);
   chassis.turnToPoint(10.3, -65.85, 1000);
   intake.move_velocity(12000);
   pros::delay(200);
@@ -333,7 +326,7 @@ void blueNeg() {
   chassis.turnToPoint(11.8, -40.1, 1000);
   chassis.moveToPoint(11.8, -40.1, 1000);
   chassis.waitUntilDone();
-  lb.move(270);
+  lb.move(12000);
 }
 
 
