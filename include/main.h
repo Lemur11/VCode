@@ -85,6 +85,7 @@ enum lady_brown_state_enum {
     NORMAL,
     LOADING,
     SECOND,
+    ALLIANCE,
     SCORED
 };
 

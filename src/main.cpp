@@ -105,6 +105,8 @@ void initialize() {
       console.printf("X: %f\n", chassis.getPose().x);         // x
       console.printf("Y: %f\n", chassis.getPose().y);         // y
       console.printf("Theta: %f\n", chassis.getPose().theta); // heading
+      console.printf("Lad: %f\n", lady_brown.get_position());
+      console.printf("Lady Brown State: %d\n", lady_brown_state);
       // log position telemetry
       lemlib::telemetrySink()->info("Chassis pose: {}", chassis.getPose());
       // delay to save resources
@@ -180,11 +182,24 @@ void opcontrol() {
 
   pros::Task vib(vibrator);
 
+  lb.off();
+  lady_brown.move_velocity(-200);
+  pros::delay(300);
+  while (lady_brown.get_actual_velocity() > 10) {
+    pros::delay(20);
+  }
+  lady_brown.move_voltage(0);
+  pros::delay(500);
+  lady_brown.tare_position();
+  
+
+
   console.focus();
 
   // printf("OPCONTROL\n");
   while (true) {
     // printf("In: %f\n", intake.get_position());
+    
 
     // Arcade control scheme with deadzones
     int dir = joystick(controller.get_analog(
@@ -193,10 +208,7 @@ void opcontrol() {
         ANALOG_RIGHT_X)); // Gets the turn left/right from right joystick
     chassis.arcade(dir, turn_p);
 
-    if (controller.get_digital_new_press(DIGITAL_X)) {
-      // printf("%f, %f, %f\n", chassis.getPose().x, chassis.getPose().y,
-      // chassis.getPose().theta);
-    }
+
 
     // button logic
     // use toggle (on rising edge)
@@ -254,8 +266,13 @@ void opcontrol() {
         // Score
         if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
           lady_brown_state = SCORED;
-          lb.move(270);
+          lb.move(310);
           // lb.move(350);
+        }
+        
+        if (controller.get_digital_new_press(DIGITAL_X)) {
+          lady_brown_state = ALLIANCE;
+          lb.move(330);
         }
 
         // Reset
@@ -275,7 +292,15 @@ void opcontrol() {
       case SECOND: {
         if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
           lady_brown_state = SCORED;
-          lb.move(270);
+          lb.move(310);
+        }
+
+        break;
+      }
+      case ALLIANCE: {
+        if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
+          lady_brown_state = NORMAL;
+          lb.move(0);
         }
 
         break;
@@ -301,8 +326,8 @@ void opcontrol() {
         // }
         break;
       }
-      }
-      pros::delay(20); // Run for 20 ms then update
     }
+      pros::delay(20); // Run for 20 ms then update
   }
+}
 }

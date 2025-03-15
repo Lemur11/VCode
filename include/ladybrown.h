@@ -24,7 +24,7 @@ class LadyBrown {
     		static LadyBrown INSTANCE;
 	    	return INSTANCE;
 	    }
-        PID lb_pid = PID(100.0, 0.0, 50.0, 45000.0);
+        PID lb_pid = PID(800.0, 0.0, 0.0, 45000.0);
         void initialize();
         void off();
         bool done();
