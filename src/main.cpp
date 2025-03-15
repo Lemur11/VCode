@@ -209,7 +209,7 @@ void opcontrol() {
     }
 
     // if (controller.get_digital_new_press(DIGITAL_B)) {
-    // 	descore.toggle();
+    // 	descore.toggle()
     // }
 
     if (controller.get_digital(DIGITAL_R1)) {
@@ -233,7 +233,7 @@ void opcontrol() {
         if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
           lady_brown_state = LOADING;
           // lb.on();
-          lb.move(84);
+          lb.move(87);
         }
         break;
       }
@@ -281,7 +281,7 @@ void opcontrol() {
       case SCORED: {
         if (controller.get_digital_new_press(DIGITAL_RIGHT)) {
           lady_brown_state = LOADING;
-          lb.move(84);
+          lb.move(87);
         }
 
         if (controller.get_digital_new_press(DIGITAL_LEFT)) {
